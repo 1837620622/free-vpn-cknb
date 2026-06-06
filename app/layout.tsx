@@ -2,13 +2,16 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'CK 免费 VPN 搜集 — 13 源 6h 同步',
-  description: '13 个公开源 · 6 小时自动抓取 · 试用 / 免费 / 实时节点 / 机场评测 · 完全开源',
-  metadataBase: new URL('https://freevpn-cknb-ckk.vercel.app'),
+  title: '免费 VPN 情报站 — 实时聚合',
+  description: '公开源自动抓取 · 后台定时同步 · 试用 / 免费 / 实时节点 / 机场评测',
+  metadataBase: new URL('https://free-vpn.chuankangkk.top'),
   openGraph: {
-    title: 'CK 免费 VPN 搜集',
-    description: '13 个公开源 · 6 小时自动同步 · 试用 / 免费 / 实时节点',
+    title: '免费 VPN 情报站',
+    description: '公开源自动抓取 · 后台定时同步 · 试用 / 免费 / 实时节点',
     type: 'website',
+  },
+  icons: {
+    icon: '/favicon.svg',
   },
 };
 
@@ -17,8 +20,8 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F8F9FB' },
-    { media: '(prefers-color-scheme: dark)', color: '#0E1116' },
+    { media: '(prefers-color-scheme: light)', color: '#F6F8FA' },
+    { media: '(prefers-color-scheme: dark)', color: '#090C10' },
   ],
 };
 

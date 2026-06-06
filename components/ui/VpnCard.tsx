@@ -32,6 +32,10 @@ const TYPE_VAR: Record<string, string> = {
   dead: '--type-dead',
 };
 
+function getButtonTextColor(type: string): string {
+  return type === 'trial' || type === 'review' || type === 'index' ? '#050505' : '#FFFFFF';
+}
+
 export function VpnCard({ entry }: { entry: VpnEntry }) {
   const primaryUrl = entry.signupUrl || entry.websiteUrl || entry.subscriptionUrl;
   const isNode = entry.type === 'node';
@@ -42,7 +46,7 @@ export function VpnCard({ entry }: { entry: VpnEntry }) {
 
   return (
     <article
-      className="vpn-card group relative flex flex-col rounded-xl overflow-hidden border transition-all duration-200 hover:-translate-y-0.5"
+      className="vpn-card group relative flex flex-col rounded-lg overflow-hidden border transition-all duration-200 hover:-translate-y-0.5"
       style={{
         background: 'var(--bg-card)',
         borderColor: 'var(--border-card)',
@@ -66,7 +70,7 @@ export function VpnCard({ entry }: { entry: VpnEntry }) {
         <TypeChip type={entry.type} />
         <FreshnessBadge publishedAt={entry.publishedAt} size="sm" />
         {entry.couponCode && (
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10.5px] font-bold rounded border border-amber-400/30 bg-amber-400/10 text-amber-300">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10.5px] font-bold rounded" style={{ color: 'color-mix(in srgb, #F59E0B 72%, var(--fg-strong))', background: 'color-mix(in srgb, #F59E0B 14%, var(--bg-elev))', border: '1px solid color-mix(in srgb, #F59E0B 38%, var(--border))' }}>
             <IconTag width={10} height={10} />
             {entry.couponCode}
           </span>
@@ -117,8 +121,8 @@ export function VpnCard({ entry }: { entry: VpnEntry }) {
             target="_blank"
             rel="noopener noreferrer"
             referrerPolicy="no-referrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12.5px] font-bold rounded-md text-white transition-transform active:scale-[0.97]"
-            style={{ background: theme.color, boxShadow: `0 4px 12px ${theme.color}40` }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12.5px] font-bold rounded-md transition-transform active:scale-[0.97]"
+            style={{ background: theme.color, color: getButtonTextColor(entry.type), boxShadow: `0 4px 12px ${theme.color}40` }}
           >
             {isNode ? '获取订阅' : '立即注册'}
             <IconArrowUpRight width={11} height={11} />

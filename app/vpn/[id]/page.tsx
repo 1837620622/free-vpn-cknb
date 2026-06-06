@@ -7,14 +7,12 @@ import { SiteShell } from '@/components/ui/SiteShell';
 import { FreshnessBadge } from '@/components/ui/FreshnessBadge';
 import { TypeChip } from '@/components/ui/TypeChip';
 import { IconArrowUpRight, IconClock, IconGlobe, IconTelegram, IconCalendar, IconCopy, IconBolt, IconSpeed, IconData, IconChevronRight, IconArrowRight } from '@/components/ui/Icon';
-import { getEntryById, getEntries } from '@/lib/read-data';
-import { getShellStats } from '@/lib/shell-stats';
+import { getEntryByIdRuntime } from '@/lib/read-data';
+import { getShellStatsRuntime } from '@/lib/shell-stats';
 import { formatUpdatedAt } from '@/lib/site-text';
 import type { VpnEntry } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
-
-const NV_GREEN = '#76B900';
 
 const TYPE_LABELS: Record<string, string> = {
   trial: '试用机场',
@@ -27,22 +25,22 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default async function VpnDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const entry = getEntryById(id);
+  const entry = await getEntryByIdRuntime(id);
   if (!entry) return notFound();
-  const stats = getShellStats();
+  const stats = await getShellStatsRuntime();
   const primaryUrl = entry.signupUrl || entry.websiteUrl || entry.subscriptionUrl;
 
   return (
     <SiteShell stats={stats}>
-      <section className="pt-8 sm:pt-12 pb-8 sm:pb-12">
-        <nav className="mb-6 sm:mb-8 flex items-center gap-1.5 text-[12px] text-white/45">
-          <Link href="/" className="hover:text-white">首页</Link>
+      <section className="pt-7 sm:pt-10 pb-7 sm:pb-9">
+        <nav className="mb-6 sm:mb-8 flex items-center gap-1.5 text-[12px] text-fg-mute">
+          <Link href="/" className="hover:text-fg-strong">首页</Link>
           <IconChevronRight width={11} height={11} className="opacity-50" />
-          <Link href={`/${entry.type === 'node' ? 'nodes' : entry.type === 'trial' ? 'trial' : entry.type === 'free' ? 'free' : entry.type === 'review' ? 'reviews' : entry.type === 'dead' ? 'dead' : 'airports'}`} className="hover:text-white">
+          <Link href={`/${entry.type === 'node' ? 'nodes' : entry.type === 'trial' ? 'trial' : entry.type === 'free' ? 'free' : entry.type === 'review' ? 'reviews' : entry.type === 'dead' ? 'dead' : 'airports'}`} className="hover:text-fg-strong">
             {TYPE_LABELS[entry.type] || entry.type}
           </Link>
           <IconChevronRight width={11} height={11} className="opacity-50" />
-          <span className="text-white/70 truncate max-w-[40vw]">{entry.name}</span>
+          <span className="text-fg-soft truncate max-w-[40vw]">{entry.name}</span>
         </nav>
 
         <div className="flex items-center gap-2 flex-wrap mb-4">
@@ -55,12 +53,12 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
           )}
         </div>
 
-        <h1 className="display text-[32px] sm:text-[48px] lg:text-[64px] text-white leading-[1.0]">
+        <h1 className="display text-[32px] sm:text-[48px] lg:text-[64px] text-fg-strong leading-[1.0]">
           {entry.name}
         </h1>
 
         {entry.description && (
-          <p className="mt-5 sm:mt-6 text-[15px] sm:text-[16px] text-white/70 leading-relaxed max-w-3xl whitespace-pre-wrap">
+          <p className="mt-5 sm:mt-6 text-[15px] sm:text-[16px] text-fg-soft leading-relaxed max-w-3xl whitespace-pre-wrap">
             {entry.description}
           </p>
         )}
@@ -78,7 +76,7 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 text-[14px] font-bold rounded-md text-black"
-              style={{ background: NV_GREEN, boxShadow: '0 0 18px rgba(118,185,0,0.3)' }}
+              style={{ background: 'var(--accent-green)', boxShadow: '0 0 18px rgba(118,185,0,0.3)' }}
             >
               <IconGlobe width={14} height={14} />
               {entry.type === 'node' ? '打开订阅' : '打开官网'}
@@ -86,12 +84,12 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
             </a>
           )}
           {entry.telegramGroup && (
-            <a href={entry.telegramGroup} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[14px] font-semibold rounded-md border border-white/15 text-white hover:bg-white/5">
+            <a href={entry.telegramGroup} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[14px] font-semibold rounded-md border border-border-strong text-fg-strong hover:bg-bg-elev">
               <IconTelegram width={13} height={13} /> 群组
             </a>
           )}
           {entry.telegramChannel && (
-            <a href={entry.telegramChannel} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[14px] font-semibold rounded-md border border-white/15 text-white hover:bg-white/5">
+            <a href={entry.telegramChannel} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[14px] font-semibold rounded-md border border-border-strong text-fg-strong hover:bg-bg-elev">
               <IconTelegram width={13} height={13} /> 频道
             </a>
           )}
@@ -118,10 +116,10 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
         <Section title="协议与地区" items={undefined}>
           {entry.protocols?.length ? (
             <div>
-              <div className="eyebrow text-white/40 mb-3">协议</div>
+              <div className="eyebrow text-fg-mute mb-3">协议</div>
               <div className="flex flex-wrap gap-1.5">
                 {entry.protocols.map((p) => (
-                  <span key={p} className="px-2.5 py-1 rounded-md text-[12px] font-bold uppercase tracking-wider border border-white/15 text-white/85">
+                  <span key={p} className="px-2.5 py-1 rounded-md text-[12px] font-bold uppercase tracking-wider border border-border-strong text-fg">
                     {p}
                   </span>
                 ))}
@@ -130,10 +128,10 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
           ) : null}
           {entry.regions?.length ? (
             <div className={entry.protocols?.length ? 'mt-6' : ''}>
-              <div className="eyebrow text-white/40 mb-3">地区</div>
+              <div className="eyebrow text-fg-mute mb-3">地区</div>
               <div className="flex flex-wrap gap-1.5">
                 {entry.regions.map((r) => (
-                  <span key={r} className="px-2.5 py-1 rounded-md text-[12px] font-medium text-white/75 border border-white/10 bg-white/[0.02]">
+                  <span key={r} className="px-2.5 py-1 rounded-md text-[12px] font-medium text-fg-soft border border-border bg-bg-elev">
                     {r}
                   </span>
                 ))}
@@ -144,25 +142,25 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
       )}
 
       <Section title="元数据" items={undefined}>
-        <div className="space-y-2.5 text-[13px] text-white/65">
+        <div className="space-y-2.5 text-[13px] text-fg-soft">
           <MetaRow Icon={IconClock} label="抓取时间">{formatUpdatedAt(entry.scrapedAt)}</MetaRow>
           {entry.publishedAt && <MetaRow Icon={IconCalendar} label="发布时间">{formatUpdatedAt(entry.publishedAt)}</MetaRow>}
           {entry.tags && entry.tags.length > 0 && (
             <div className="flex items-start gap-2">
-              <span className="text-white/40 shrink-0">标签</span>
+              <span className="text-fg-mute shrink-0">标签</span>
               <div className="flex flex-wrap gap-1.5">
                 {entry.tags.map((t) => (
-                  <span key={t} className="px-2 py-0.5 rounded text-[11px] bg-white/5 text-white/70 border border-white/10">{t}</span>
+                  <span key={t} className="px-2 py-0.5 rounded text-[11px] bg-bg-elev text-fg-soft border border-border">{t}</span>
                 ))}
               </div>
             </div>
           )}
           {entry.sourceUrls?.length > 0 && (
             <div className="pt-2">
-              <div className="eyebrow text-white/40 mb-2">来源</div>
+              <div className="eyebrow text-fg-mute mb-2">来源</div>
               <div className="flex flex-col gap-1.5">
                 {entry.sourceUrls.map((u) => (
-                  <a key={u} href={u} target="_blank" rel="noopener noreferrer" className="text-[12.5px] text-white/70 hover:text-white truncate inline-flex items-center gap-1">
+                  <a key={u} href={u} target="_blank" rel="noopener noreferrer" className="text-[12.5px] text-fg-soft hover:text-fg-strong truncate inline-flex items-center gap-1">
                     <IconArrowUpRight width={11} height={11} /> {u}
                   </a>
                 ))}
@@ -177,13 +175,13 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
 
 function Section({ title, items, children }: { title: string; items?: { label: string; value: string }[]; children?: React.ReactNode }) {
   return (
-    <section className="py-10 sm:py-12 border-t border-white/8">
-      <div className="eyebrow text-white/40 mb-5 sm:mb-6">{title}</div>
+    <section className="py-8 sm:py-10 border-t border-border">
+      <div className="eyebrow text-fg-mute mb-5 sm:mb-6">{title}</div>
       {items ? (
         <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 sm:gap-x-8 gap-y-5 sm:gap-y-6 max-w-3xl">
           {items.map((it) => (
             <div key={it.label}>
-              <dt className="text-[10.5px] font-bold uppercase tracking-wider text-white/40 mb-1">{it.label}</dt>
+              <dt className="text-[10.5px] font-bold uppercase tracking-wider text-fg-mute mb-1">{it.label}</dt>
               <dd className="text-[14px] sm:text-[15px] font-semibold tracking-tight break-all">{it.value}</dd>
             </div>
           ))}
@@ -199,8 +197,8 @@ function MetaRow({ Icon, label, children }: { Icon: React.ComponentType<{ width?
   return (
     <div className="flex items-center gap-2">
       <Icon width={12} height={12} />
-      <span className="text-white/40">{label}</span>
-      <span className="text-white/85 font-mono-num">{children}</span>
+      <span className="text-fg-mute">{label}</span>
+      <span className="text-fg font-mono-num">{children}</span>
     </div>
   );
 }
@@ -218,7 +216,7 @@ function CopyButton({ text }: { text: string }) {
           }
         } catch {}
       }}
-      className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[14px] font-semibold rounded-md border border-white/15 text-white hover:bg-white/5"
+      className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[14px] font-semibold rounded-md border border-border-strong text-fg-strong hover:bg-bg-elev"
     >
       <IconCopy width={13} height={13} /> <span id="copy-msg">复制订阅</span>
     </button>

@@ -15,9 +15,9 @@ export const CONFIG = {
   cutoffDays: 15,
   siteName: '免费 VPN 情报站',
   siteShortName: 'VPN情报',
-  description: '自动同步多源免费/试用机场与节点信息，6 小时更新一次',
-  cron: '0 */6 * * *',
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? 'https://freevpn-cknb.vercel.app',
+  description: '自动同步多源免费/试用机场与节点信息，后台定时更新',
+  cron: '20 19 * * *',
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? 'https://free-vpn.chuankangkk.top',
   author: {
     wechat: '1837620622',
     nickname: '传康Kk',

@@ -1,204 +1,113 @@
-# CK 免费 VPN 搜集
+# 免费 VPN 情报站说明
 
-> 苹果风免费 VPN / 机场情报聚合站 · 13 个公开源 · 6 小时自动同步 · 完全开源
+免费 VPN 情报站用于聚合公开来源中的免费节点、试用机场、机场索引、日报与评测内容。项目作者为 **传康Kk**，线上域名固定为：
 
-## 项目简介
+```text
+https://free-vpn.chuankangkk.top
+```
 
-`CK 免费 VPN 搜集`（英文名 `freevpn-cknb-ckk`）是一个开源、纯静态、自动化的免费 VPN 与机场情报聚合站。
-后台使用 TypeScript + Cheerio 从 13 个公开源自动抓取试用码、免费节点、机场评测，
-通过 **GitHub Actions 每 6 小时跑一次** 抓取并提交 `data/vpns.json`，
-再由 **Vercel** 监听 `main` 分支 push 自动重新部署。
+## 运行逻辑
 
-## 数据源（共 13 个）
+| 模块 | 说明 |
+| --- | --- |
+| 页面展示 | Next.js App Router 负责各分类页面与详情页 |
+| 数据抓取 | TypeScript 抓取器并行访问公开源 |
+| 去重合并 | 根据名称与链接生成稳定 ID，合并重复条目 |
+| 线上快照 | 只保存活跃数据快照、内容指纹和最近运行状态 |
+| 定时同步 | 每天自动运行一次，内容变化才写入全量快照 |
+| 本地归档 | 超出滚动窗口的条目写入 `data/archive.json` |
 
-| 源 ID | 来源 | 类型 |
-| --- | --- | --- |
-| `ygjc` | [一个机场 ygjc.cc](https://ygjc.cc) | 试用 / 免费 / 优惠码 |
-| `kerrynotes` | [Kerry 的学习笔记](https://kerrynotes.com) | 试用码 / 免费 |
-| `waiyiyuyan` | [我爱白嫖](https://waiyiyuyan.com) | 试用 / 免费 |
-| `vpnpaihang` | [VPN 排行榜](https://vpnpaihang.github.io) | 日榜节点 + 推荐机场 |
-| `vpnbaike` | [VPN 百科](https://vpnbaike.github.io) | 镜像日榜 |
-| `au1rxx` | [Au1rxx 验证节点](https://github.com/Au1rxx/free-vpn-subscriptions) | clash 订阅 |
-| `tonykongcn` | [tonykongcn 节点](https://github.com/tonykongcn/vpn-list) | 多协议节点 |
-| `freenodes` | [FreeNodes 节点池](https://github.com/free-nodes/free-nodes) | 公开节点 |
-| `gfwoff` | [GFWOFF 评测](https://gfwoff.org) | VPN / 机场评测文章 |
-| `everett7623` | [机场推荐索引 2026](https://github.com/everett7623/2026-airport-recommend) | 全面评测 |
-| `panda` | [Panda-VPN-Pro (DiningFactory)](https://github.com/DiningFactory/Panda-VPN-Pro) | 低价机场评测 |
-| `airport-access` | [ChatGPT 机场精选 (chatgpt-helper-tech)](https://github.com/chatgpt-helper-tech/airport-access) | markdown 表格 |
-| `tg-enricher` | 访问注册页补全 Telegram 群/频道 | 后处理 |
+## 节省资源策略
 
-## 数据策略
+| 项目 | 做法 |
+| --- | --- |
+| 抓取频率 | 从高频同步改成每天一次 |
+| 全量写入 | 先计算内容指纹，数据没变就跳过大快照写入 |
+| 归档文件 | 过期内容只保留在本地归档，不写入线上展示快照 |
+| 读取方式 | 页面优先读取线上快照，失败时回退本地 JSON |
+| 前端资源 | 3D 场景移动端限帧和降采样，减少设备压力 |
 
-- **15 天滚动窗口**：超过 15 天的条目自动移入 `data/archive.json`
-- **去重键**：`SHA1(normalize(name) + normalize(signupUrl))`
-- **5 级新鲜度**：
-  - `< 24h` 绿色 #10B981 实时
-  - `< 3d`  蓝色 #3B82F6 今日
-  - `< 7d`  紫色 #8B5CF6 本周
-  - `< 15d` 灰色 #6B7280 近期
-  - `> 15d` 不显示
-- **类型**：`trial` 试用 / `free` 免费 / `node` 实时节点 / `index` 机场索引 / `review` 评测 / `dead` 跑路
+## 页面设计
 
-## 技术栈
-
-- **前端**：Next.js 15 (App Router) + React 19 + Tailwind 3
-- **UI 风格**：苹果玻璃（`backdrop-blur-2xl` + mesh-gradient + SF Pro 字体栈）
-- **抓取**：TypeScript + Cheerio 1.1.0 + tsx（自写 parser）
-- **CI/CD**：GitHub Actions（cron 6h） + Vercel 自动部署
+| 页面 | 设计重点 |
+| --- | --- |
+| 首页 | 全局 3D 情报背景、实时统计、重点分类入口 |
+| 试用 | 展示注册即用、优惠码、试用周期 |
+| 免费 | 展示免费套餐和公益节点 |
+| 节点 | 展示公开订阅和协议标签 |
+| 机场库 | 聚合试用、免费、索引与评测 |
+| 日报 | 按时间窗口展示最新条目 |
+| 数据源 | 展示来源状态、收录数量和最近成功信息 |
+| 关于 | 说明作者、数据策略和部署方式 |
 
 ## Mac 部署步骤
 
-环境：macOS 14+ / Node 20+ / pnpm 9+
+```bash
+pnpm install
+pnpm scrape
+pnpm build
+pnpm deploy
+```
+
+本地开发：
 
 ```bash
-# 1. 克隆
-git clone https://github.com/1837620622/freevpn-cknb-ckk.git
-cd freevpn-cknb-ckk
-
-# 2. 安装依赖
-pnpm install
-
-# 3. 本地试跑抓取（可选）
-pnpm scrape
-
-# 4. 启动开发服务器
 pnpm dev
-# 访问 http://localhost:3000
+```
 
-# 5. 生产构建
-pnpm build
-pnpm start
+本地预览线上运行包：
 
-# 6. 部署到 Vercel
-npx vercel login
-npx vercel --prod
+```bash
+pnpm preview
+```
+
+写入一次线上快照：
+
+```bash
+pnpm seed:remote
 ```
 
 ## Windows 部署步骤
 
-环境：Windows 10/11 / Node 20+ / pnpm 9+
-
 ```bat
-:: 1. 克隆
-git clone https://github.com/1837620622/freevpn-cknb-ckk.git
-cd freevpn-cknb-ckk
-
-:: 2. 安装依赖
 pnpm install
-
-:: 3. 本地试跑抓取
 pnpm scrape
-
-:: 4. 启动开发
-pnpm dev
-
-:: 5. 生产构建
 pnpm build
-pnpm start
-
-:: 6. 部署到 Vercel
-npx vercel login
-npx vercel --prod
+pnpm deploy
 ```
 
-## 启用 GitHub Actions 自动抓取
+本地开发：
 
-1. 将仓库 fork 到自己账号
-2. Settings → Actions → General → Workflow permissions → 勾选 **Read and write permissions**
-3. 启用后，每 6 小时（cron `0 */6 * * *`）自动跑一次 `pnpm scrape`
-4. 若 `data/vpns.json` 有变化，会自动 commit 并 push 到 `main`
-5. 配合 Vercel 即可全自动更新
+```bat
+pnpm dev
+```
 
-## 启用 Vercel 自动部署
+## 域名访问
 
-1. 登录 [vercel.com](https://vercel.com) → New Project → Import Git Repository
-2. 选择 `freevpn-cknb-ckk` 仓库
-3. Framework Preset 选 `Next.js`
-4. 部署完成后，每次 push 到 `main` 自动 rebuild
+部署后访问：
+
+```text
+https://free-vpn.chuankangkk.top
+```
 
 ## 目录结构
 
 ```text
 免费VPN情报站-传康kk/
-├── app/                      # Next.js App Router 页面
-│   ├── page.tsx              # 首页（概览）
-│   ├── trial/                # 试用机场
-│   ├── free/                 # 免费机场
-│   ├── nodes/                # 实时节点
-│   ├── airports/             # 机场库
-│   ├── daily/                # 日报
-│   ├── sources/              # 数据源
-│   ├── about/                # 关于
-│   ├── dead/                 # 跑路名单
-│   ├── reviews/              # 评测
-│   ├── vpn/[id]/             # 详情页
-│   └── api/scrape/           # 触发抓取 API（备用）
-├── components/ui/            # 玻璃 UI 组件库
-│   ├── Icon.tsx              # SVG 图标
-│   ├── FreshnessBadge.tsx    # 5 级新鲜度徽章
-│   ├── Glass.tsx             # 玻璃卡 / 按钮
-│   ├── GradientBg.tsx        # mesh-gradient 背景
-│   ├── VpnCard.tsx           # VPN 卡片
-│   ├── ListPage.tsx          # 列表页
-│   ├── SiteShell.tsx         # 全局布局
-│   └── TypeChip.tsx          # 类型 chip
-├── lib/
-│   ├── config.ts             # 13 源配置 + cron + 作者
-│   ├── types.ts              # VpnEntry / SourceMeta / Meta
-│   ├── http.ts               # fetchUrl + GB18030 解码
-│   ├── format.ts             # normalize / makeId / 日期解析
-│   ├── dedupe.ts             # SHA1 去重 + 合并
-│   ├── data.ts               # 读写 data/vpns.json
-│   ├── read-data.ts          # 前端读 data/vpns.json
-│   └── scrapers/             # 12 个抓取器
-│       ├── article-base.ts   # vpnpaihang/vpnbaike 共享逻辑
-│       ├── ygjc.ts
-│       ├── kerrynotes.ts
-│       ├── waiyiyuyan.ts
-│       ├── au1rxx.ts
-│       ├── tonykongcn.ts
-│       ├── freenodes.ts
-│       ├── vpnpaihang.ts
-│       ├── vpnbaike.ts
-│       ├── everett7623.ts
-│       ├── gfwoff.ts
-│       ├── panda.ts
-│       ├── airport-access.ts
-│       ├── tg-enricher.ts
-│       └── index.ts
-├── scripts/scrape.ts         # 抓取入口
-├── data/                     # 抓取产物
-│   ├── vpns.json             # 活跃 + meta
-│   └── archive.json          # 超期归档
-├── .github/workflows/
-│   └── scrape.yml            # cron 6h + 自动 commit
-├── tailwind.config.ts
-├── next.config.ts
-├── postcss.config.mjs
-├── package.json
-└── MD说明.md
+├── app/                    # 页面路由
+├── components/ui/          # UI 组件
+├── data/                   # 本地数据
+├── lib/                    # 抓取、格式化、去重、读取
+├── scripts/                # 本地脚本
+├── public/                 # 静态资源
+├── tailwind.config.ts      # 样式配置
+├── README.md               # 项目说明
+└── MD说明.md               # 中文说明
 ```
 
-## 关键脚本
+## 作者信息
 
-| 命令 | 作用 |
-| --- | --- |
-| `pnpm install` | 安装依赖 |
-| `pnpm dev` | 启动开发服务器（http://localhost:3000） |
-| `pnpm build` | 生产构建 |
-| `pnpm start` | 启动生产服务器 |
-| `pnpm scrape` | 运行所有抓取器并写入 `data/vpns.json` |
-| `pnpm scrape:single <id>` | 跑单个抓取器 |
-
-## 作者
-
-- **传康Kk**
+- 作者：传康Kk
 - 微信：`1837620622`
 - 邮箱：`2040168455@qq.com`
 - B站 / 咸鱼：`万能程序员`
-
-## 声明
-
-本项目仅供技术研究与学习用途，请遵守当地法律法规。
-数据来源于公开网络，仅作为索引展示，不对其中机场的可用性、安全性、合规性负责。
-使用任何免费服务前请自行评估风险。

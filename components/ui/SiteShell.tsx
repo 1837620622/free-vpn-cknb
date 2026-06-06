@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { GradientBg } from './GradientBg';
+import { GlobalScene } from './GlobalScene';
 import { IconMenu, IconClose, IconSearch } from './Icon';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -44,6 +45,7 @@ export function SiteShell({ children, stats }: { children: ReactNode; stats: { t
   return (
     <div className="min-h-screen antialiased" style={{ color: 'var(--fg)' }}>
       <GradientBg />
+      <GlobalScene />
 
       <header
         className="sticky top-0 z-40 backdrop-blur-xl transition-colors"
@@ -96,16 +98,17 @@ export function SiteShell({ children, stats }: { children: ReactNode; stats: { t
               <span className="lg:hidden">LIVE</span>
             </span>
             <ThemeToggle />
-            <button
-              className="hidden sm:inline-flex p-2 rounded-md hover:bg-white/8 transition-colors"
+            <Link
+              href="/sources"
+              className="hidden sm:inline-flex p-2 rounded-md hover:bg-bg-elev transition-colors"
               style={{ color: 'var(--fg-soft)' }}
-              aria-label="搜索"
+              aria-label="查看数据源"
             >
               <IconSearch width={16} height={16} />
-            </button>
+            </Link>
             <button
               onClick={() => setOpen(true)}
-              className="lg:hidden p-2 rounded-md hover:bg-white/8 transition-colors"
+              className="lg:hidden p-2 rounded-md hover:bg-bg-elev transition-colors"
               style={{ color: 'var(--fg)' }}
               aria-label="打开菜单"
             >
@@ -127,7 +130,7 @@ export function SiteShell({ children, stats }: { children: ReactNode; stats: { t
                 <span className="h-7 w-7 rounded-md flex items-center justify-center font-black text-black text-[13px]" style={{ background: NV_GREEN }}>CK</span>
                 <span className="text-[15px] font-bold">{stats.siteName}</span>
               </div>
-              <button onClick={() => setOpen(false)} className="p-2 rounded-md hover:bg-white/8" style={{ color: 'var(--fg-soft)' }} aria-label="关闭菜单">
+              <button onClick={() => setOpen(false)} className="p-2 rounded-md hover:bg-bg-elev" style={{ color: 'var(--fg-soft)' }} aria-label="关闭菜单">
                 <IconClose width={18} height={18} />
               </button>
             </div>
@@ -161,69 +164,91 @@ export function SiteShell({ children, stats }: { children: ReactNode; stats: { t
       <main className="mx-auto max-w-7xl px-5 sm:px-6">{children}</main>
 
       <footer
-        className="mt-24 sm:mt-32 backdrop-blur-xl transition-colors"
+        className="mt-10 sm:mt-14 transition-colors"
         style={{
-          background: 'color-mix(in srgb, var(--bg) 92%, transparent)',
+          background: 'linear-gradient(180deg, color-mix(in srgb, var(--bg) 70%, transparent), color-mix(in srgb, var(--bg-elev) 82%, transparent))',
           borderTop: '1px solid var(--border)',
         }}
       >
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-14 sm:py-20">
-          <div className="grid grid-cols-2 sm:grid-cols-12 gap-8 sm:gap-10">
-            <div className="col-span-2 sm:col-span-5">
-              <div className="flex items-center gap-2.5 mb-4">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-8 sm:py-10">
+          <div className="footer-console">
+            <div className="footer-console__metrics">
+              <FooterMetric label="活跃条目" value={stats.totalActive} />
+              <FooterMetric label="公开源" value={stats.totalSources} />
+              <FooterMetric label="24h 实时" value={stats.realtime24h} />
+              <FooterMetric label="窗口" value={stats.windowText} />
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-12 gap-6 sm:gap-8 px-4 sm:px-5 py-6 sm:py-7">
+              <div className="col-span-2 sm:col-span-5">
+                <div className="flex items-center gap-2.5 mb-3">
                 <span className="h-7 w-7 rounded-md flex items-center justify-center font-black text-black text-[13px]" style={{ background: NV_GREEN }}>CK</span>
                 <span className="text-[15px] font-bold tracking-tight">{stats.siteName}</span>
               </div>
-              <p className="text-[13px] leading-relaxed max-w-sm mb-5" style={{ color: 'var(--fg-soft)' }}>
-                {stats.totalSources} 个公开源 · {stats.cronText}自动同步 · {stats.windowText}滚动窗口 · 完全开源。
-              </p>
-              <div className="text-[12px] space-y-0.5" style={{ color: 'var(--fg-mute)' }}>
-                <div>© {new Date().getFullYear()} {stats.author.nickname}</div>
-                <div>微信 {stats.author.wechat} · 邮箱 {stats.author.email}</div>
-                <div>B站 / 咸鱼: {stats.author.bilibili}</div>
+                <p className="text-[13px] leading-relaxed max-w-sm" style={{ color: 'var(--fg-soft)' }}>
+                  每天自动同步公开源，内容变化才写入快照。作者传康Kk，域名 free-vpn.chuankangkk.top。
+                </p>
+              </div>
+              <FooterLinks title="分类" links={[
+                { href: '/trial', label: '试用机场' },
+                { href: '/free', label: '免费机场' },
+                { href: '/nodes', label: '实时节点' },
+                { href: '/airports', label: '机场库' },
+              ]} />
+              <FooterLinks title="内容" links={[
+                { href: '/daily', label: '日报' },
+                { href: '/reviews', label: '评测' },
+                { href: '/dead', label: '跑路名单' },
+                { href: '/sources', label: '数据源' },
+              ]} />
+              <div className="col-span-2 sm:col-span-3">
+                <h4 className="eyebrow mb-3" style={{ color: 'var(--fg-faint)' }}>作者</h4>
+                <ul className="space-y-1.5 text-[13px]" style={{ color: 'var(--fg-soft)' }}>
+                  <li>传康Kk</li>
+                  <li>微信 {stats.author.wechat}</li>
+                  <li>邮箱 {stats.author.email}</li>
+                  <li>B站 / 咸鱼: {stats.author.bilibili}</li>
+                </ul>
               </div>
             </div>
-            <div className="col-span-1 sm:col-span-2">
-              <h4 className="eyebrow mb-3" style={{ color: 'var(--fg-faint)' }}>分类</h4>
-              <ul className="space-y-2 text-[13px]" style={{ color: 'var(--fg-soft)' }}>
-                <li><Link href="/trial" className="hover:opacity-80" style={{ color: 'inherit' }}>试用机场</Link></li>
-                <li><Link href="/free" className="hover:opacity-80" style={{ color: 'inherit' }}>免费机场</Link></li>
-                <li><Link href="/nodes" className="hover:opacity-80" style={{ color: 'inherit' }}>实时节点</Link></li>
-                <li><Link href="/airports" className="hover:opacity-80" style={{ color: 'inherit' }}>机场库</Link></li>
-              </ul>
+
+            <div className="footer-console__bar">
+              <span>本项目仅供技术研究与学习用途，请遵守当地法律法规</span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full pulse-soft" style={{ background: NV_GREEN, boxShadow: '0 0 8px rgba(118,185,0,0.8)' }} />
+                <span className="font-bold" style={{ color: 'var(--accent-text)' }}>LIVE</span>
+                <span className="font-mono-num">free-vpn.chuankangkk.top</span>
+              </span>
             </div>
-            <div className="col-span-1 sm:col-span-2">
-              <h4 className="eyebrow mb-3" style={{ color: 'var(--fg-faint)' }}>内容</h4>
-              <ul className="space-y-2 text-[13px]" style={{ color: 'var(--fg-soft)' }}>
-                <li><Link href="/daily" className="hover:opacity-80" style={{ color: 'inherit' }}>日报</Link></li>
-                <li><Link href="/reviews" className="hover:opacity-80" style={{ color: 'inherit' }}>评测</Link></li>
-                <li><Link href="/dead" className="hover:opacity-80" style={{ color: 'inherit' }}>跑路名单</Link></li>
-                <li><Link href="/sources" className="hover:opacity-80" style={{ color: 'inherit' }}>数据源</Link></li>
-              </ul>
-            </div>
-            <div className="col-span-2 sm:col-span-3">
-              <h4 className="eyebrow mb-3" style={{ color: 'var(--fg-faint)' }}>项目</h4>
-              <ul className="space-y-2 text-[13px]" style={{ color: 'var(--fg-soft)' }}>
-                <li><Link href="/about" className="hover:opacity-80" style={{ color: 'inherit' }}>关于</Link></li>
-                <li>
-                  <a href="https://github.com/1837620622/freevpn-cknb-ckk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 inline-flex items-center gap-1.5" style={{ color: 'inherit' }}>
-                    GitHub <IconSearch width={11} height={11} />
-                  </a>
-                </li>
-                <li><a href="/MD说明.md" className="hover:opacity-80" style={{ color: 'inherit' }}>说明文档</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-12 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[11.5px]" style={{ borderTop: '1px solid var(--border)', color: 'var(--fg-mute)' }}>
-            <span>本项目仅供技术研究与学习用途，请遵守当地法律法规</span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full pulse-soft" style={{ background: NV_GREEN, boxShadow: '0 0 8px rgba(118,185,0,0.8)' }} />
-              <span className="font-bold" style={{ color: NV_GREEN }}>LIVE</span>
-              <span className="font-mono-num">{stats.totalSources} 源 · {stats.cronText}同步</span>
-            </span>
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function FooterMetric({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="footer-metric">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function FooterLinks({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+  return (
+    <div className="col-span-1 sm:col-span-2">
+      <h4 className="eyebrow mb-3" style={{ color: 'var(--fg-faint)' }}>{title}</h4>
+      <ul className="space-y-1.5 text-[13px]" style={{ color: 'var(--fg-soft)' }}>
+        {links.map((link) => (
+          <li key={link.href}>
+            <Link href={link.href} className="footer-link" style={{ color: 'inherit' }}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

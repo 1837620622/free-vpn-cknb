@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "freevpn-cknb-ckk",
+  "main": "custom-worker.ts",
+  "routes": [
+    {
+      "pattern": "free-vpn.chuankangkk.top",
+      "custom_domain": true
+    }
+  ],
+  "compatibility_date": "2026-06-06",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "freevpn-cknb-ckk"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "VPN_DATA",
+      "id": "640abfbf33734f9588dd250cc077508e"
+    }
+  ],
+  "triggers": {
+    "crons": ["20 19 * * *"]
+  },
+  "observability": {
+    "enabled": true
+  }
+}

@@ -10,6 +10,8 @@ export function cronToHuman(cron: string): string {
   const m2 = cron.match(/^0 \*\/(\d+) \* \* \*$/);
   if (m2) return `${m2[1]} 小时`;
   if (cron === '0 * * * *') return '1 小时';
+  const daily = cron.match(/^\d{1,2} \d{1,2} \* \* \*$/);
+  if (daily) return '每天';
   return cron;
 }
 

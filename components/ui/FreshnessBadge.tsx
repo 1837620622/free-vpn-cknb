@@ -22,10 +22,10 @@ export function getFreshness(publishedAt: string | undefined | null): Freshness 
 interface Cfg { label: string; bg: string; fg: string; border: string; Icon: ComponentType<IconProps & SVGProps<SVGSVGElement>> }
 
 const config: Record<Freshness, Cfg> = {
-  realtime: { label: '实时', bg: '#76B900', fg: '#FFFFFF', border: 'transparent', Icon: IconBolt },
-  today: { label: '今日', bg: '#FFFFFF', fg: '#000000', border: 'transparent', Icon: IconSparkle },
-  week: { label: '本周', bg: '#404040', fg: '#FFFFFF', border: 'transparent', Icon: IconClock },
-  recent: { label: '近期', bg: '#707070', fg: '#FFFFFF', border: 'transparent', Icon: IconCalendar },
+  realtime: { label: '实时', bg: '#76B900', fg: '#050505', border: 'rgba(0,0,0,0.18)', Icon: IconBolt },
+  today: { label: '今日', bg: 'var(--bg-elev)', fg: 'var(--fg-strong)', border: 'var(--border-strong)', Icon: IconSparkle },
+  week: { label: '本周', bg: 'color-mix(in srgb, var(--fg-strong) 12%, var(--bg-elev))', fg: 'var(--fg-strong)', border: 'var(--border)', Icon: IconClock },
+  recent: { label: '近期', bg: 'color-mix(in srgb, var(--fg-strong) 8%, var(--bg-elev))', fg: 'var(--fg-soft)', border: 'var(--border)', Icon: IconCalendar },
 };
 
 export function FreshnessBadge({ publishedAt, size = 'md' }: { publishedAt: string | undefined | null; size?: 'sm' | 'md' | 'lg' }) {
@@ -37,7 +37,7 @@ export function FreshnessBadge({ publishedAt, size = 'md' }: { publishedAt: stri
   return (
     <span
       className={`inline-flex items-center font-bold uppercase tracking-wide rounded ${sizing}`}
-      style={{ background: c.bg, color: c.fg, boxShadow: f === 'realtime' ? '0 0 12px rgba(118, 185, 0, 0.5)' : 'none' }}
+      style={{ background: c.bg, color: c.fg, border: `1px solid ${c.border}`, boxShadow: f === 'realtime' ? '0 0 12px rgba(118, 185, 0, 0.5)' : 'none' }}
     >
       <c.Icon width={iconSize} height={iconSize} strokeWidth={2.4} />
       {c.label}

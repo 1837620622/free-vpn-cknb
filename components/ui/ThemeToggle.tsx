@@ -66,7 +66,7 @@ export function ThemeToggle() {
       onClick={cycle}
       title={`主题：${label}（点击切换）`}
       aria-label={`切换主题，当前${label}`}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-white/8 transition-colors"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-bg-elev transition-colors"
       style={{ color: 'var(--fg-soft)' }}
     >
       {mode === 'light' ? (
