@@ -115,15 +115,6 @@ export const CONFIG = {
       cutoffDays: 365,
       description: '机场跑路/预警名单',
     },
-    jiedianjun: {
-      id: 'jiedianjun',
-      displayName: '节点君评测',
-      url: 'https://www.jiedianjun.com',
-      enabled: true,
-      type: 'review',
-      cutoffDays: 90,
-      description: '5 家试用机场横向评测',
-    },
   } satisfies Record<string, SourceConfig>,
 } as const;
 

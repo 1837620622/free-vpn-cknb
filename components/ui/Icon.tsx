@@ -1,77 +1,106 @@
 /**
- * 苹果风 UI 图标库（使用 Lucide 风格 SVG）
+ * SVG 图标库（Lucide 风格，stroke 1.6，stroke-linecap round）
  */
 import type { SVGProps } from 'react';
 
-const base = (children: React.ReactNode, props: SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    {children}
-  </svg>
-);
+export type IconProps = SVGProps<SVGSVGElement> & { width?: number; height?: number; strokeWidth?: number };
 
-export const IconClock = (p: SVGProps<SVGSVGElement>) =>
-  base(<><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></>, p);
+const base = (props: IconProps) => ({
+  width: props.width ?? 16,
+  height: props.height ?? 16,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: props.strokeWidth ?? 1.6,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  ...props,
+});
 
-export const IconSparkle = (p: SVGProps<SVGSVGElement>) =>
-  base(
-    <>
-      <path d="M12 3l1.8 4.8L18.6 9.6l-4.8 1.8L12 16.2l-1.8-4.8L5.4 9.6l4.8-1.8z" />
-      <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" />
-    </>, p);
-
-export const IconArrowUpRight = (p: SVGProps<SVGSVGElement>) =>
-  base(<><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></>, p);
-
-export const IconGlobe = (p: SVGProps<SVGSVGElement>) =>
-  base(<><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3a14 14 0 0 1 0 18" /><path d="M12 3a14 14 0 0 0 0 18" /></>, p);
-
-export const IconShield = (p: SVGProps<SVGSVGElement>) =>
-  base(<path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z" />, p);
-
-export const IconLock = (p: SVGProps<SVGSVGElement>) =>
-  base(<><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></>, p);
-
-export const IconCopy = (p: SVGProps<SVGSVGElement>) =>
-  base(<><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></>, p);
-
-export const IconCheck = (p: SVGProps<SVGSVGElement>) =>
-  base(<polyline points="4 12 10 18 20 6" />, p);
-
-export const IconX = (p: SVGProps<SVGSVGElement>) =>
-  base(<><line x1="6" y1="6" x2="18" y2="18" /><line x1="6" y1="18" x2="18" y2="6" /></>, p);
-
-export const IconRocket = (p: SVGProps<SVGSVGElement>) =>
-  base(<><path d="M5 19l4-4M9 15c-2-1-4-4-4-8 4 0 7 2 8 4l-3 3a1 1 0 0 1-1 1z" /><path d="M14 8l2-2 5 5-2 2z" /><path d="M3 21l5-1" /></>, p);
-
-export const IconList = (p: SVGProps<SVGSVGElement>) =>
-  base(<><line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" /><circle cx="4" cy="6" r="1" /><circle cx="4" cy="12" r="1" /><circle cx="4" cy="18" r="1" /></>, p);
-
-export const IconCalendar = (p: SVGProps<SVGSVGElement>) =>
-  base(<><rect x="3" y="5" width="18" height="16" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="8" y1="3" x2="8" y2="7" /><line x1="16" y1="3" x2="16" y2="7" /></>, p);
-
-export const IconTag = (p: SVGProps<SVGSVGElement>) =>
-  base(<><path d="M3 12V4h8l10 10-8 8z" /><circle cx="8" cy="8" r="1.4" /></>, p);
-
-export const IconServer = (p: SVGProps<SVGSVGElement>) =>
-  base(<><rect x="3" y="3" width="18" height="6" rx="2" /><rect x="3" y="15" width="18" height="6" rx="2" /><line x1="7" y1="6" x2="7" y2="6" /><line x1="7" y1="18" x2="7" y2="18" /></>, p);
-
-export const IconTelegram = (p: SVGProps<SVGSVGElement>) =>
-  base(<path d="M21 3L2 11l6 2 2 6 4-4 6 5z" />, p);
-
-export const IconGift = (p: SVGProps<SVGSVGElement>) =>
-  base(<><polyline points="20 12 20 22 4 22 4 12" /><rect x="2" y="7" width="20" height="5" /><line x1="12" y1="22" x2="12" y2="7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></>, p);
-
-export const IconSearch = (p: SVGProps<SVGSVGElement>) =>
-  base(<><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" /></>, p);
-
-export const IconMenu = (p: SVGProps<SVGSVGElement>) =>
-  base(<><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>, p);
-
-export const IconBolt = (p: SVGProps<SVGSVGElement>) =>
-  base(<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />, p);
-
-export const IconLayers = (p: SVGProps<SVGSVGElement>) =>
-  base(<><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>, p);
-
-export const IconSkull = (p: SVGProps<SVGSVGElement>) =>
-  base(<><circle cx="12" cy="10" r="7" /><circle cx="9" cy="10" r="1" fill="currentColor" /><circle cx="15" cy="10" r="1" fill="currentColor" /><path d="M9 17v4M15 17v4M12 17v4" /></>, p);
+export function IconClock(props: IconProps) {
+  return <svg {...base(props)}><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></svg>;
+}
+export function IconCalendar(props: IconProps) {
+  return <svg {...base(props)}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 9h18M8 3v4M16 3v4" /></svg>;
+}
+export function IconBolt(props: IconProps) {
+  return <svg {...base(props)}><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" /></svg>;
+}
+export function IconSparkle(props: IconProps) {
+  return <svg {...base(props)}><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3zM19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z" /></svg>;
+}
+export function IconArrowUpRight(props: IconProps) {
+  return <svg {...base(props)}><path d="M7 17 17 7M9 7h8v8" /></svg>;
+}
+export function IconArrowRight(props: IconProps) {
+  return <svg {...base(props)}><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
+}
+export function IconArrowUpRightArrow(props: IconProps) {
+  return <svg {...base(props)}><path d="M7 17 17 7M9 7h8v8" /></svg>;
+}
+export function IconGlobe(props: IconProps) {
+  return <svg {...base(props)}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>;
+}
+export function IconLock(props: IconProps) {
+  return <svg {...base(props)}><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>;
+}
+export function IconCopy(props: IconProps) {
+  return <svg {...base(props)}><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>;
+}
+export function IconCheck(props: IconProps) {
+  return <svg {...base(props)}><polyline points="4 12 10 18 20 6" /></svg>;
+}
+export function IconX(props: IconProps) {
+  return <svg {...base(props)}><path d="M6 6l12 12M18 6 6 18" /></svg>;
+}
+export function IconRocket(props: IconProps) {
+  return <svg {...base(props)}><path d="M5 15c1-5 5-9 10-10 0 0 0 8-5 13-2 0-5-1-5-3zM9 15l-3 3M14 10l3-3" /><circle cx="14" cy="10" r="1.5" fill="currentColor" stroke="none" /></svg>;
+}
+export function IconLayers(props: IconProps) {
+  return <svg {...base(props)}><path d="M12 2 2 7l10 5 10-5-10-5zM2 12l10 5 10-5M2 17l10 5 10-5" /></svg>;
+}
+export function IconServer(props: IconProps) {
+  return <svg {...base(props)}><rect x="3" y="3" width="18" height="7" rx="1.5" /><rect x="3" y="14" width="18" height="7" rx="1.5" /><circle cx="6" cy="6.5" r="0.6" fill="currentColor" /><circle cx="6" cy="17.5" r="0.6" fill="currentColor" /></svg>;
+}
+export function IconTelegram(props: IconProps) {
+  return <svg {...base(props)}><path d="M21 4 3 11l6 2 2 6 4-4 5 4 1-15z" /><path d="M9 13l5-4" /></svg>;
+}
+export function IconTag(props: IconProps) {
+  return <svg {...base(props)}><path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9z" /><circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none" /></svg>;
+}
+export function IconSearch(props: IconProps) {
+  return <svg {...base(props)}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>;
+}
+export function IconMenu(props: IconProps) {
+  return <svg {...base(props)}><path d="M4 7h16M4 12h16M4 17h16" /></svg>;
+}
+export function IconClose(props: IconProps) {
+  return <svg {...base(props)}><path d="M6 6l12 12M18 6 6 18" /></svg>;
+}
+export function IconStar(props: IconProps) {
+  return <svg {...base(props)}><path d="m12 3 2.6 6 6.4.5-4.9 4.2 1.5 6.3L12 16.8 6.4 20l1.5-6.3L3 9.5l6.4-.5L12 3z" /></svg>;
+}
+export function IconShield(props: IconProps) {
+  return <svg {...base(props)}><path d="M12 2 4 5v7c0 5 4 9 8 10 4-1 8-5 8-10V5l-8-3z" /></svg>;
+}
+export function IconExternal(props: IconProps) {
+  return <svg {...base(props)}><path d="M14 4h6v6M10 14 20 4M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" /></svg>;
+}
+export function IconGitHub(props: IconProps) {
+  return <svg {...base(props)}><path d="M12 .5C5.6.5.5 5.6.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2.9-.3 1.9-.4 2.9-.4s2 .1 2.9.4c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.6 18.4.5 12 .5z" /></svg>;
+}
+export function IconChevronRight(props: IconProps) {
+  return <svg {...base(props)}><path d="m9 6 6 6-6 6" /></svg>;
+}
+export function IconSpeed(props: IconProps) {
+  return <svg {...base(props)}><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" /><path d="M12 21a9 9 0 1 1 6.4-2.6" /><path d="m12 12 5-3" /></svg>;
+}
+export function IconData(props: IconProps) {
+  return <svg {...base(props)}><ellipse cx="12" cy="6" rx="8" ry="3" /><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" /></svg>;
+}
+export function IconSun(props: IconProps) {
+  return <svg {...base(props)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>;
+}
+export function IconMoon(props: IconProps) {
+  return <svg {...base(props)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>;
+}

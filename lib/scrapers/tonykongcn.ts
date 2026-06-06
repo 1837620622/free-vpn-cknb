@@ -27,32 +27,46 @@ interface TonyKongNode {
 
 function parseClashYaml(yaml: string): { name: string; server: string; port: number; type: string }[] {
   const out: { name: string; server: string; port: number; type: string }[] = [];
-  const blocks = yaml.split(/^---/m);
-  for (const block of blocks) {
-    if (!/^proxies:/m.test(block)) continue;
-    const lines = block.split('\n');
-    let i = lines.findIndex((l) => l.trim() === 'proxies:');
-    if (i < 0) continue;
-    i++;
-    while (i < lines.length) {
-      const line = lines[i];
-      if (!line.startsWith('  -')) break;
-      i++;
-      const obj: Record<string, unknown> = {};
-      while (i < lines.length && lines[i].startsWith('    ')) {
-        const m = lines[i].match(/^    (\w+):\s*(.*)$/);
-        if (m) obj[m[1]] = m[2].trim().replace(/^["']|["']$/g, '');
-        i++;
+  const lines = yaml.split('\n');
+  let inProxies = false;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (/^proxies:\s*$/.test(line)) { inProxies = true; i++; continue; }
+    if (inProxies) {
+      if (/^\S/.test(line) && line.trim() && !line.startsWith(' ') && !line.startsWith('\t')) {
+        inProxies = false; i++; continue;
       }
-      if (obj.name && obj.server) {
-        out.push({
-          name: String(obj.name),
-          server: String(obj.server),
-          port: Number(obj.port ?? 0),
-          type: String(obj.type ?? 'unknown'),
-        });
+      const start = line.match(/^(\s*)-\s*(.*)$/);
+      if (start) {
+        const baseIndent = start[1].length;
+        const obj: Record<string, unknown> = {};
+        if (start[2] && start[2].includes(':')) {
+          const m = start[2].match(/^(\w+):\s*(.*)$/);
+          if (m) obj[m[1]] = m[2].trim().replace(/^["']|["']$/g, '');
+        }
+        i++;
+        const childIndent = baseIndent + 2;
+        while (i < lines.length) {
+          const cl = lines[i];
+          if (!cl.trim()) { i++; continue; }
+          if (!cl.startsWith(' '.repeat(childIndent))) break;
+          const m = cl.match(/^\s+(\w[\w-]*):\s*(.*)$/);
+          if (m) obj[m[1]] = m[2].trim().replace(/^["']|["']$/g, '');
+          i++;
+        }
+        if (obj.name && obj.server) {
+          out.push({
+            name: String(obj.name),
+            server: String(obj.server),
+            port: Number(obj.port ?? 0),
+            type: String(obj.type ?? 'unknown'),
+          });
+        }
+        continue;
       }
     }
+    i++;
   }
   return out;
 }

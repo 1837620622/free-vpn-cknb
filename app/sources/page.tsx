@@ -1,59 +1,97 @@
+/**
+ * 数据源页（深色工具站风）
+ */
 import { SiteShell } from '@/components/ui/SiteShell';
+import { IconArrowUpRight } from '@/components/ui/Icon';
 import { getMeta, getEntries } from '@/lib/read-data';
+import { getShellStats } from '@/lib/shell-stats';
+import { formatUpdatedAt, getCronText, getWindowText } from '@/lib/site-text';
 
 export const dynamic = 'force-dynamic';
 
-const SOURCE_DESCR: Record<string, string> = {
-  ygjc: '一个机场 ygjc.cc - 月度 + 试用 + 优惠码',
-  kerrynotes: 'Kerry 的学习笔记 - 试用码与免费套餐',
-  waiyiyuyan: '我爱白嫖 - 免费节点与机场导航',
-  au1rxx: 'Au1rxx 验证节点 - clash 订阅 + status 统计',
-  tonykongcn: 'tonykongcn 验证节点 - 多协议节点',
-  freenodes: 'FreeNodes 节点池',
-  vpnpaihang: 'VPN 排行榜 - 日榜节点 + 推荐机场',
-  vpnbaike: 'VPN 百科 - 镜像日榜',
-  everett7623: '机场推荐索引 2026 - 全面评测',
-  gfwoff: 'GFWOFF - VPN/机场评测文章',
-  panda: 'Panda-VPN-Pro - 低价机场评测 (DiningFactory)',
-  'airport-access': 'ChatGPT 机场精选 - markdown 表格',
-  'tg-enricher': '访问注册页补全 Telegram 群/频道',
-};
+const NV_GREEN = '#76B900';
 
 export default function SourcesPage() {
-  const meta = getMeta();
+  const stats = getShellStats();
   const all = getEntries();
-  const updatedAt = meta.generatedAt ? new Date(meta.generatedAt).toLocaleString('zh-CN', { hour12: false }) : '';
+  const meta = getMeta();
   const sources = meta.sources || [];
   const bySource = new Map<string, number>();
   for (const e of all) for (const s of e.sources || []) bySource.set(s, (bySource.get(s) || 0) + 1);
 
+  const enabledCount = sources.length;
+  const okCount = sources.filter((s) => s.lastSuccess).length;
+  const failCount = sources.filter((s) => !s.lastSuccess).length;
+
   return (
-    <SiteShell totalActive={all.length} totalSources={sources.length} updatedAt={updatedAt}>
-      <section className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">数据源</h1>
-        <p className="mt-2 text-[14px] text-slate-600 dark:text-slate-300">所有数据均由 GitHub Actions 自动抓取，6 小时一次</p>
+    <SiteShell stats={stats}>
+      <section className="pt-10 sm:pt-16 pb-8 sm:pb-12">
+        <div className="eyebrow mb-3" style={{ color: NV_GREEN }}>数据源</div>
+        <h1 className="display text-[36px] sm:text-[56px] lg:text-[72px] text-white leading-[1.0]">
+          {enabledCount} 个公开源
+        </h1>
+        <p className="mt-4 text-[14px] sm:text-[15px] text-white/60 max-w-2xl leading-relaxed">
+          所有数据均由 GitHub Actions 自动抓取，每 {getCronText()}一次，超过 {getWindowText()}的条目自动归档。
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-2 sm:gap-3 text-[12px] font-mono-num">
+          <span className="px-2.5 py-1 rounded border border-white/10 bg-white/[0.02] text-white/70">
+            <span className="text-white/40">总源</span> <span className="font-bold text-white">{enabledCount}</span>
+          </span>
+          <span className="px-2.5 py-1 rounded border border-white/10 bg-white/[0.02] text-white/70">
+            <span className="text-white/40">正常</span> <span className="font-bold" style={{ color: NV_GREEN }}>{okCount}</span>
+          </span>
+          <span className="px-2.5 py-1 rounded border border-white/10 bg-white/[0.02] text-white/70">
+            <span className="text-white/40">异常</span> <span className={`font-bold ${failCount > 0 ? 'text-rose-400' : 'text-white/40'}`}>{failCount}</span>
+          </span>
+        </div>
       </section>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sources.map((s) => (
-          <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="rounded-2xl bg-white/72 dark:bg-white/5 backdrop-blur-2xl ring-1 ring-white/40 p-5 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-[15px] font-semibold">{s.displayName || s.id}</div>
-                <div className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{SOURCE_DESCR[s.id] || '自动抓取源'}</div>
-                <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-2 truncate max-w-md">{s.url}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-semibold">{bySource.get(s.id) || 0}</div>
-                <div className="text-[11px] text-slate-500">条</div>
-                <div className={`mt-2 inline-block px-2 py-0.5 text-[10px] rounded-full ${s.lastSuccess ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' : 'bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300'}`}>
-                  {s.lastSuccess ? '正常' : '失败'}
-                </div>
-              </div>
-            </div>
-            {s.errorMessage && <div className="mt-2 text-[11px] text-rose-600 dark:text-rose-400">{s.errorMessage}</div>}
-          </a>
-        ))}
-      </div>
+
+      <section className="pb-20">
+        {sources.length === 0 ? (
+          <div className="py-20 text-center text-white/45 text-[14px]">暂无数据</div>
+        ) : (
+          <div className="border-t border-white/10">
+            {sources.map((s) => {
+              const count = bySource.get(s.id) || 0;
+              return (
+                <a
+                  key={s.id}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="grid grid-cols-12 gap-3 sm:gap-4 items-center py-4 sm:py-5 border-b border-white/8 hover:bg-white/[0.03] transition-colors -mx-3 px-3"
+                >
+                  <div className="col-span-12 sm:col-span-5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[15px] sm:text-[16px] font-bold tracking-tight text-white">{s.displayName || s.id}</span>
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider border border-white/10 text-white/55 font-mono-num">
+                        {s.id}
+                      </span>
+                    </div>
+                    <div className="text-[12px] text-white/45 truncate">{s.url.replace(/^https?:\/\//, '')}</div>
+                  </div>
+                  <div className="col-span-4 sm:col-span-2 text-[12px] text-white/55 font-mono-num">
+                    <div className="text-white/40 text-[10.5px] uppercase tracking-wider mb-0.5">收录</div>
+                    <div className="text-white font-semibold text-[15px]">{count}</div>
+                  </div>
+                  <div className="col-span-4 sm:col-span-2 text-[12px] text-white/55 font-mono-num">
+                    <div className="text-white/40 text-[10.5px] uppercase tracking-wider mb-0.5">状态</div>
+                    <div className={`text-[12px] font-bold inline-flex items-center gap-1 ${s.lastSuccess ? '' : 'text-rose-400'}`} style={{ color: s.lastSuccess ? NV_GREEN : undefined }}>
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: s.lastSuccess ? NV_GREEN : '#F87171', boxShadow: s.lastSuccess ? '0 0 6px rgba(118,185,0,0.7)' : 'none' }} />
+                      {s.lastSuccess ? '正常' : '失败'}
+                    </div>
+                  </div>
+                  <div className="col-span-4 sm:col-span-3 text-[12px] text-white/45 font-mono-num">
+                    <div className="text-white/40 text-[10.5px] uppercase tracking-wider mb-0.5">最近成功</div>
+                    <div className="text-white/70">{s.lastRunAt ? formatUpdatedAt(s.lastRunAt) : '—'}</div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </SiteShell>
   );
 }

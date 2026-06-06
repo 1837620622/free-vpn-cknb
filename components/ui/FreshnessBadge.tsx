@@ -1,12 +1,8 @@
 /**
- * 5 级新鲜度徽章（醒目）
- *  < 24h  绿色 #10B981  "实时"
- *  < 3d   蓝色 #3B82F6  "今日"
- *  < 7d   紫色 #8B5CF6  "本周"
- *  < 15d  灰色 #6B7280  "近期"
- *  > 15d  不显示
+ * 5 级新鲜度徽章（深 / 浅双主题）
  */
-import { IconBolt, IconClock, IconCalendar, IconSparkle } from './Icon';
+import { IconBolt, IconClock, IconCalendar, IconSparkle, type IconProps } from './Icon';
+import type { ComponentType, SVGProps } from 'react';
 
 export type Freshness = 'realtime' | 'today' | 'week' | 'recent';
 
@@ -23,22 +19,27 @@ export function getFreshness(publishedAt: string | undefined | null): Freshness 
   return null;
 }
 
-const config: Record<Freshness, { label: string; bg: string; text: string; ring: string; Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }> = {
-  realtime: { label: '实时', bg: 'bg-emerald-500/95', text: 'text-white', ring: 'ring-emerald-300/60', Icon: IconBolt },
-  today: { label: '今日', bg: 'bg-blue-500/95', text: 'text-white', ring: 'ring-blue-300/60', Icon: IconSparkle },
-  week: { label: '本周', bg: 'bg-violet-500/95', text: 'text-white', ring: 'ring-violet-300/60', Icon: IconClock },
-  recent: { label: '近期', bg: 'bg-slate-400/90', text: 'text-white', ring: 'ring-slate-300/60', Icon: IconCalendar },
+interface Cfg { label: string; bg: string; fg: string; border: string; Icon: ComponentType<IconProps & SVGProps<SVGSVGElement>> }
+
+const config: Record<Freshness, Cfg> = {
+  realtime: { label: '实时', bg: '#76B900', fg: '#FFFFFF', border: 'transparent', Icon: IconBolt },
+  today: { label: '今日', bg: '#FFFFFF', fg: '#000000', border: 'transparent', Icon: IconSparkle },
+  week: { label: '本周', bg: '#404040', fg: '#FFFFFF', border: 'transparent', Icon: IconClock },
+  recent: { label: '近期', bg: '#707070', fg: '#FFFFFF', border: 'transparent', Icon: IconCalendar },
 };
 
 export function FreshnessBadge({ publishedAt, size = 'md' }: { publishedAt: string | undefined | null; size?: 'sm' | 'md' | 'lg' }) {
   const f = getFreshness(publishedAt);
   if (!f) return null;
   const c = config[f];
-  const sizing = size === 'lg' ? 'px-3 py-1.5 text-sm gap-1.5' : size === 'sm' ? 'px-2 py-0.5 text-[11px] gap-1' : 'px-2.5 py-1 text-xs gap-1.5';
-  const iconSize = size === 'lg' ? 14 : size === 'sm' ? 11 : 12;
+  const sizing = size === 'lg' ? 'px-2.5 py-1 text-[12px] gap-1' : size === 'sm' ? 'px-1.5 py-0.5 text-[10px] gap-0.5' : 'px-2 py-0.5 text-[11px] gap-0.5';
+  const iconSize = size === 'lg' ? 11 : size === 'sm' ? 9 : 10;
   return (
-    <span className={`inline-flex items-center ${sizing} ${c.bg} ${c.text} font-medium rounded-full ring-1 ${c.ring} shadow-sm`}>
-      <c.Icon width={iconSize} height={iconSize} />
+    <span
+      className={`inline-flex items-center font-bold uppercase tracking-wide rounded ${sizing}`}
+      style={{ background: c.bg, color: c.fg, boxShadow: f === 'realtime' ? '0 0 12px rgba(118, 185, 0, 0.5)' : 'none' }}
+    >
+      <c.Icon width={iconSize} height={iconSize} strokeWidth={2.4} />
       {c.label}
     </span>
   );

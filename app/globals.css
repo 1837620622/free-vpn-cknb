@@ -2,26 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #F2F2F7;
-  --foreground: #0A0A0A;
+/* ============================================================
+   主题变量：light / dark 两套，统一管色
+   - 所有组件优先使用语义化变量（--bg / --fg / --border / --card / --muted）
+   - 仅在需要绝对颜色（如品牌色 chip）时使用固定色
+   ============================================================ */
+
+:root,
+:root[data-theme='dark'] {
+  /* 表面 */
+  --bg: #0E1116;
+  --bg-elev: #161A22;
+  --bg-card: linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.01) 100%);
+  --bg-card-hover: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%);
+  --bg-overlay: rgba(10, 12, 18, 0.7);
+
+  /* 文字 */
+  --fg: #FAFAFA;
+  --fg-strong: #FFFFFF;
+  --fg-soft: rgba(255, 255, 255, 0.65);
+  --fg-mute: rgba(255, 255, 255, 0.5);
+  --fg-faint: rgba(255, 255, 255, 0.35);
+
+  /* 边框 */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-card: rgba(255, 255, 255, 0.08);
+
+  /* 玻璃 */
+  --glass-bg: rgba(20, 22, 28, 0.5);
+
+  /* 阴影 */
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px rgba(0,0,0,0.25);
+  --shadow-card-hover: 0 12px 32px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.3);
+
+  /* 滚动条 */
+  --scroll-track: #0E1116;
+  --scroll-thumb: rgba(255, 255, 255, 0.12);
+  --scroll-thumb-hover: rgba(255, 255, 255, 0.2);
+
+  /* 选中 */
+  --selection-bg: #76B900;
+  --selection-fg: #000;
+
+  /* 网格 + 噪点 */
+  --grid-color: rgba(255, 255, 255, 0.025);
+  --noise-opacity: 0.04;
+
+  /* 装饰光斑（夜间更亮） */
+  --orb-1: rgba(118, 185, 0, 0.10);
+  --orb-2: rgba(59, 130, 246, 0.06);
+  --orb-3: rgba(168, 85, 247, 0.05);
+
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #FFFFFF;
-  }
-}
+:root[data-theme='light'] {
+  --bg: #F8F9FB;
+  --bg-elev: #FFFFFF;
+  --bg-card: linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%);
+  --bg-card-hover: linear-gradient(180deg, #FFFFFF 0%, #F5F7FA 100%);
+  --bg-overlay: rgba(255, 255, 255, 0.7);
 
-html, body {
-  background: var(--background);
-  color: var(--foreground);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --fg: #0A0E14;
+  --fg-strong: #000000;
+  --fg-soft: rgba(10, 14, 20, 0.7);
+  --fg-mute: rgba(10, 14, 20, 0.55);
+  --fg-faint: rgba(10, 14, 20, 0.4);
+
+  --border: rgba(10, 14, 20, 0.08);
+  --border-strong: rgba(10, 14, 20, 0.16);
+  --border-card: rgba(10, 14, 20, 0.08);
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 3px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.04);
+  --shadow-card-hover: 0 1px 0 rgba(255,255,255,0.6) inset, 0 4px 12px rgba(15,23,42,0.08), 0 12px 32px rgba(15,23,42,0.08);
+
+  --scroll-track: #F1F3F5;
+  --scroll-thumb: rgba(10, 14, 20, 0.15);
+  --scroll-thumb-hover: rgba(10, 14, 20, 0.3);
+
+  --selection-bg: #76B900;
+  --selection-fg: #FFF;
+
+  --grid-color: rgba(10, 14, 20, 0.05);
+  --noise-opacity: 0.02;
+
+  --orb-1: rgba(118, 185, 0, 0.08);
+  --orb-2: rgba(59, 130, 246, 0.05);
+  --orb-3: rgba(168, 85, 247, 0.04);
+
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
+*::selection { background: var(--selection-bg); color: var(--selection-fg); }
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", "PingFang SC", "Microsoft YaHei", "Segoe UI",
+    Roboto, system-ui, sans-serif;
+  font-feature-settings: "ss01", "ss02", "cv11", "calt", "liga", "kern";
+  letter-spacing: -0.011em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.font-mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+.font-mono-num, .tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+.display {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", "PingFang SC", system-ui, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  line-height: 1;
+}
 
 .line-clamp-2 {
   display: -webkit-box;
@@ -29,3 +140,49 @@ html, body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bg-noise {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 200px 200px;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.text-gradient-nv {
+  background: linear-gradient(135deg, #76B900 0%, #5a8f00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--scroll-track); }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+
+@media (max-width: 640px) {
+  html, body { -webkit-text-size-adjust: 100%; }
+  .display { letter-spacing: -0.035em; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: float 6s ease-in-out infinite; }

@@ -1,44 +1,103 @@
+/**
+ * 关于页（深色工具站风）
+ */
 import { SiteShell } from '@/components/ui/SiteShell';
-import { getMeta, getEntries } from '@/lib/read-data';
+import { getShellStats } from '@/lib/shell-stats';
+import { getCronText, getWindowText, getSiteName } from '@/lib/site-text';
+import { CONFIG } from '@/lib/config';
+import { IconGitHub } from '@/components/ui/Icon';
 
 export const dynamic = 'force-dynamic';
 
+const NV_GREEN = '#76B900';
+
 export default function AboutPage() {
-  const meta = getMeta();
-  const all = getEntries();
-  const updatedAt = meta.generatedAt ? new Date(meta.generatedAt).toLocaleString('zh-CN', { hour12: false }) : '';
+  const stats = getShellStats();
 
   return (
-    <SiteShell totalActive={all.length} totalSources={meta.sources?.length ?? 0} updatedAt={updatedAt}>
-      <section className="max-w-3xl">
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">关于本站</h1>
-        <p className="mt-3 text-[15px] text-slate-600 dark:text-slate-300 leading-relaxed">
-          <strong>CK 免费 VPN 搜集</strong> 是一个开源的免费 VPN / 机场情报聚合站。
-          全部数据由 GitHub Actions 每 6 小时从 13 个公开源抓取，自动去重、归档、推送到 data/vpns.json，
-          Vercel 监听到 git push 后自动重新部署。
-        </p>
+    <SiteShell stats={stats}>
+      <section className="pt-10 sm:pt-16 pb-8 sm:pb-12">
+        <div className="eyebrow mb-3" style={{ color: NV_GREEN }}>关于</div>
+        <h1 className="display text-[36px] sm:text-[56px] lg:text-[72px] text-white leading-[1.0]">
+          关于本站
+        </h1>
+      </section>
 
-        <h2 className="mt-8 text-[20px] font-semibold tracking-tight">数据策略</h2>
-        <ul className="mt-3 text-[14px] text-slate-600 dark:text-slate-300 space-y-1 list-disc pl-5">
-          <li>15 天滚动窗口：超期进 <code className="px-1 bg-slate-100 dark:bg-slate-800 rounded">archive.json</code></li>
-          <li>唯一键：<code className="px-1 bg-slate-100 dark:bg-slate-800 rounded">SHA1(normalize(name) + normalize(signupUrl))</code></li>
-          <li>5 级新鲜度：实时 / 今日 / 本周 / 近期 / 隐藏</li>
+      <section className="pb-10 sm:pb-14 max-w-3xl">
+        <h2 className="eyebrow text-white/40 mb-4">说明</h2>
+        <div className="space-y-3.5 text-[15px] sm:text-[16px] text-white/75 leading-relaxed">
+          <p>
+            <strong className="text-white">{getSiteName()}</strong> 是一个开源的免费 / 试用 VPN 情报聚合站。
+            全部数据由 GitHub Actions 每 {getCronText()}从 {stats.totalSources} 个公开源抓取，
+            自动去重、归档、推送到 <code className="px-1.5 py-0.5 rounded bg-white/8 text-white/85 text-[13.5px] font-mono">data/vpns.json</code>，
+            Vercel 监听到 git push 后自动重新部署。
+          </p>
+          <p>
+            站点本身不提供任何 VPN 服务，只对公开数据进行索引与展示。
+            点击卡片上的「立即注册」/「打开订阅」会跳转到原始来源。
+          </p>
+        </div>
+      </section>
+
+      <section className="py-10 sm:py-14 border-t border-white/8">
+        <h2 className="eyebrow text-white/40 mb-6">数据策略</h2>
+        <ul className="space-y-3 text-[14.5px] text-white/75 max-w-3xl">
+          <li className="flex gap-3">
+            <span style={{ color: NV_GREEN }} className="shrink-0 mt-1">●</span>
+            <span>滚动窗口：超 {getWindowText()}的条目进入 <code className="px-1.5 py-0.5 rounded bg-white/8 text-[13px] font-mono">archive.json</code>，主站不展示</span>
+          </li>
+          <li className="flex gap-3">
+            <span style={{ color: NV_GREEN }} className="shrink-0 mt-1">●</span>
+            <span>唯一键：<code className="px-1.5 py-0.5 rounded bg-white/8 text-[13px] font-mono">SHA1(normalize(name) + normalize(signupUrl))</code>，跨源去重</span>
+          </li>
+          <li className="flex gap-3">
+            <span style={{ color: NV_GREEN }} className="shrink-0 mt-1">●</span>
+            <span>新鲜度 5 级：实时（&lt; 24h）/ 今日（&lt; 3d）/ 本周（&lt; 7d）/ 近期（&lt; {getWindowText()}）/ 隐藏</span>
+          </li>
+          <li className="flex gap-3">
+            <span style={{ color: NV_GREEN }} className="shrink-0 mt-1">●</span>
+            <span>抓取器全部为 Node 脚本，失败不中断整体流程，单源失败只记日志</span>
+          </li>
         </ul>
+      </section>
 
-        <h2 className="mt-8 text-[20px] font-semibold tracking-tight">作者</h2>
-        <ul className="mt-3 text-[14px] text-slate-600 dark:text-slate-300 space-y-1 list-disc pl-5">
-          <li>传康Kk</li>
-          <li>微信：1837620622</li>
-          <li>邮箱：2040168455@qq.com</li>
-          <li>B站 / 咸鱼：万能程序员</li>
+      <section className="py-10 sm:py-14 border-t border-white/8">
+        <h2 className="eyebrow text-white/40 mb-6">技术栈</h2>
+        <ul className="space-y-2 text-[14px] text-white/70 max-w-3xl font-mono-num">
+          <li>Next.js 15 (App Router) · React 19 · TypeScript</li>
+          <li>Tailwind CSS 3 · Cheerio 1</li>
+          <li>数据写入: <code className="px-1.5 py-0.5 rounded bg-white/8 text-white/85 text-[13px]">data/vpns.json</code></li>
+          <li>抓取调度: GitHub Actions cron <code className="px-1.5 py-0.5 rounded bg-white/8 text-white/85 text-[13px]">{CONFIG.cron}</code></li>
+          <li>部署: Vercel (监听 main 分支 push)</li>
         </ul>
+      </section>
 
-        <h2 className="mt-8 text-[20px] font-semibold tracking-tight">声明</h2>
-        <p className="mt-3 text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed">
+      <section className="py-10 sm:py-14 border-t border-white/8">
+        <h2 className="eyebrow text-white/40 mb-6">作者</h2>
+        <ul className="space-y-2 text-[14.5px] text-white/75 max-w-3xl">
+          <li className="flex gap-3"><span style={{ color: NV_GREEN }}>●</span> {CONFIG.author.nickname}</li>
+          <li className="flex gap-3"><span style={{ color: NV_GREEN }}>●</span> 微信：{CONFIG.author.wechat}</li>
+          <li className="flex gap-3"><span style={{ color: NV_GREEN }}>●</span> 邮箱：{CONFIG.author.email}</li>
+          <li className="flex gap-3"><span style={{ color: NV_GREEN }}>●</span> B站 / 咸鱼：{CONFIG.author.bilibili}</li>
+        </ul>
+      </section>
+
+      <section className="py-10 sm:py-14 border-t border-white/8">
+        <h2 className="eyebrow text-white/40 mb-6">声明</h2>
+        <p className="text-[13px] text-white/50 leading-relaxed max-w-3xl">
           本项目仅供技术研究与学习用途，请遵守当地法律法规。
           数据来源于公开网络，仅作为索引展示，不对其中机场的可用性、安全性、合规性负责。
           使用任何免费服务前请自行评估风险。
         </p>
+        <a
+          href="https://github.com/1837620622/freevpn-cknb-ckk"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-flex items-center gap-2 px-5 py-3 text-[14px] font-bold rounded-md text-black"
+          style={{ background: NV_GREEN, boxShadow: '0 0 18px rgba(118,185,0,0.3)' }}
+        >
+          <IconGitHub width={14} height={14} /> 打开 GitHub
+        </a>
       </section>
     </SiteShell>
   );

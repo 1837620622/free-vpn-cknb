@@ -43,33 +43,59 @@ interface Au1rxxNode {
 
 function parseClashYaml(yaml: string): Au1rxxNode[] {
   const nodes: Au1rxxNode[] = [];
-  const blocks = yaml.split(/^---/m);
-  for (const block of blocks) {
-    if (!/^proxies:/m.test(block)) continue;
-    const lines = block.split('\n');
-    let i = lines.findIndex((l) => l.trim() === 'proxies:');
-    if (i < 0) continue;
-    i++;
-    while (i < lines.length) {
-      const line = lines[i];
-      if (!line.startsWith('  -')) break;
+  const lines = yaml.split('\n');
+  let inProxies = false;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (/^proxies:\s*$/.test(line)) {
+      inProxies = true;
       i++;
-      const obj: Record<string, unknown> = {};
-      while (i < lines.length && lines[i].startsWith('    ')) {
-        const m = lines[i].match(/^    (\w+):\s*(.*)$/);
-        if (m) {
-          let v: string | boolean = m[2].trim();
-          if (v === 'true') v = true;
-          else if (v === 'false') v = false;
-          else v = v.replace(/^["']|["']$/g, '');
-          obj[m[1]] = v;
+      continue;
+    }
+    if (inProxies) {
+      if (/^\S/.test(line) && line.trim() && !line.startsWith(' ') && !line.startsWith('\t')) {
+        inProxies = false;
+        i++;
+        continue;
+      }
+      const start = line.match(/^(\s*)-\s*(.*)$/);
+      if (start) {
+        const baseIndent = start[1].length;
+        const obj: Record<string, unknown> = {};
+        if (start[2] && start[2].includes(':')) {
+          const m = start[2].match(/^(\w+):\s*(.*)$/);
+          if (m) {
+            let v: string | boolean = m[2].trim();
+            if (v === 'true') v = true;
+            else if (v === 'false') v = false;
+            else v = v.replace(/^["']|["']$/g, '');
+            obj[m[1]] = v;
+          }
         }
         i++;
-      }
-      if (obj.name && obj.server) {
-        nodes.push(obj as unknown as Au1rxxNode);
+        const childIndent = baseIndent + 2;
+        while (i < lines.length) {
+          const cl = lines[i];
+          if (!cl.trim()) { i++; continue; }
+          if (!cl.startsWith(' '.repeat(childIndent))) break;
+          const m = cl.match(/^\s+(\w[\w-]*):\s*(.*)$/);
+          if (m) {
+            let v: string | boolean = m[2].trim();
+            if (v === 'true') v = true;
+            else if (v === 'false') v = false;
+            else v = v.replace(/^["']|["']$/g, '');
+            obj[m[1]] = v;
+          }
+          i++;
+        }
+        if (obj.name && obj.server) {
+          nodes.push(obj as unknown as Au1rxxNode);
+        }
+        continue;
       }
     }
+    i++;
   }
   return nodes;
 }
