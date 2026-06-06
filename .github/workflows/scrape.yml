@@ -1,0 +1,39 @@
+# 抓取 + 提交 data/vpns.json，每 6 小时
+name: scrape
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - run: pnpm install --frozen-lockfile
+      - name: Run scrapers
+        run: pnpm scrape
+      - name: Commit data
+        run: |
+          git config user.name "ck-bot"
+          git config user.email "bot@example.com"
+          if [[ -n "$(git status --porcelain data/)" ]]; then
+            git add data/
+            git commit -m "chore(scrape): update data/vpns.json [skip ci]"
+            git push
+          else
+            echo "No data changes"
+          fi

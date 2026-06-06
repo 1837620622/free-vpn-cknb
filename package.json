@@ -1,0 +1,34 @@
+{
+  "name": "freevpn-cknb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "免费 VPN 情报聚合站，自动同步多源试用/免费机场与节点信息",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "scrape": "tsx scripts/scrape.ts",
+    "scrape:single": "tsx scripts/scrape.ts --source",
+    "clean": "rm -rf .next node_modules/.cache .turbo",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "cheerio": "1.1.0",
+    "next": "15.5.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "tsx": "4.19.2",
+    "typescript": "5.7.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
