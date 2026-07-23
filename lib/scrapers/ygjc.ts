@@ -104,7 +104,12 @@ async function scrapePage(url: string): Promise<VpnEntry[]> {
     const entry: VpnEntry = {
       id: makeId(name, signupUrl ?? name),
       name,
-      type: vtype,
+      type: vtype as VpnEntry['type'],
+      period: period ?? '未知试用期限',
+      couponCode: realCoupon ?? undefined,
+      isActive: true,
+      traffic: traffic ?? '未知流量',
+      protocols: protocols.length > 0 ? protocols : undefined,
       description: desc,
       signupUrl,
       websiteUrl: signupUrl,

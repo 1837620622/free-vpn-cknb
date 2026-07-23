@@ -15,6 +15,7 @@ import { gfwoffScraper } from './gfwoff';
 import { pandaScraper } from './panda';
 import { airportAccessScraper } from './airport-access';
 import { tgEnricherScraper } from './tg-enricher';
+import { freenodeScraper } from './freenode';
 
 export const allScrapers: Scraper[] = [
   ygjcScraper,
@@ -30,6 +31,7 @@ export const allScrapers: Scraper[] = [
   pandaScraper,
   airportAccessScraper,
   tgEnricherScraper,
+  freenodeScraper,
 ];
 
 export const scraperById = (id: string): Scraper | undefined =>
