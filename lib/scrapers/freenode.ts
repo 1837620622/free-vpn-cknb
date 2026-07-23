@@ -12,13 +12,12 @@ import { cleanText, makeId, nowIso } from '../format';
 const BASE = 'https://free-node.com/proxylist/';
 const INDEX_URL = BASE;
 
-async function scrapeIndex(): Promise<{ entries: VpnEntry[]; reviewUrls: string[] }> {
+async function scrapeIndex(): Promise<VpnEntry[]> {
   const res = await fetchUrl(INDEX_URL, { timeout: 20000 });
-  if (!res.ok) return { entries: [], reviewUrls: [] };
+  if (!res.ok) return [];
   const $ = loadHtml(res.body);
   const scrapedAt = nowIso();
   const entries: VpnEntry[] = [];
-  const reviewUrls = new Set<string>();
 
   $('table tr, .wp-block-table tr').each((_, tr) => {
     const $tr = $(tr);
@@ -30,10 +29,11 @@ async function scrapeIndex(): Promise<{ entries: VpnEntry[]; reviewUrls: string[
     const price = cleanText($(tds[3]).text());
     if (!name || name.length < 2) return;
 
-    const signupUrl = absoluteUrl(INDEX_URL, $(tds[0]).find('a').first().attr('href') || '#');
-    if (signupUrl.includes('free-node.com')) {
-      reviewUrls.add(signupUrl);
-    }
+    // 无真实链接时跳过，不生成指向列表页的假 URL
+    const href = $(tds[0]).find('a').first().attr('href');
+    const signupUrl = absoluteUrl(INDEX_URL, href);
+    if (!signupUrl) return;
+
     entries.push({
       id: makeId(name, signupUrl),
       name,
@@ -50,12 +50,7 @@ async function scrapeIndex(): Promise<{ entries: VpnEntry[]; reviewUrls: string[
     });
   });
 
-  return { entries, reviewUrls: Array.from(reviewUrls) };
-}
-
-async function scrapeReview(url: string): Promise<Partial<VpnEntry> | null> {
-  // 如果需要深入单个机场页面解析，可以在这里扩展
-  return null;
+  return entries;
 }
 
 export const freenodeScraper: Scraper = {
@@ -66,17 +61,9 @@ export const freenodeScraper: Scraper = {
   cutoffDays: 90,
   async run(ctx: ScraperContext): Promise<ScraperResult> {
     try {
-      const { entries, reviewUrls } = await scrapeIndex();
+      const entries = await scrapeIndex();
       ctx.log(`freenode: ${entries.length} entries`);
-
-      // 简单合并评论（如果有）
-      const enriched: VpnEntry[] = entries.map(e => ({
-        ...e,
-        sources: [...e.sources, 'freenode'],
-        sourceUrls: [INDEX_URL],
-      }));
-
-      return { entries: enriched, meta: okMeta(this, ctx, enriched.length) };
+      return { entries, meta: okMeta(this, ctx, entries.length) };
     } catch (e) {
       return { entries: [], meta: errMeta(this, ctx, e) };
     }

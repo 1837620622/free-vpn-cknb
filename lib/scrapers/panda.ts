@@ -39,10 +39,15 @@ function parseAirports(md: string): VpnEntry[] {
     const priceMatch = snippet.match(/(\d+(?:\.\d+)?)\s*[\/／]\s*(\d+\s*[GMKT]B)/i);
     const discountMatch = snippet.match(/(\d+(?:\.\d+)?)\s*折|优惠码[:：]\s*(\S+)/);
     const runStatus = snippet.match(/(跑路|跑路风险|疑似跑路|可能跑路|已停服|停止运营|已关停)/);
-    const founded = snippet.match(/(\d{4}\.\d{2}\.\d{2})/);
+    const founded = snippet.match(/(\d{4})\.(\d{2})\.(\d{2})/);
     const tags: string[] = [];
     if (typeMatch) tags.push(typeMatch[1]);
     if (runStatus) tags.push('跑路风险');
+
+    // 点分日期手动转 ISO，避免 new Date('2024.01.01') 跨运行时解析不稳定
+    const publishedAt = founded
+      ? `${founded[1]}-${founded[2]}-${founded[3]}T00:00:00+08:00`
+      : nowIso();
 
     out.push({
       id,
@@ -57,7 +62,7 @@ function parseAirports(md: string): VpnEntry[] {
       tags,
       sources: ['panda-vpn-pro'],
       sourceUrls: [README_URL],
-      publishedAt: founded ? new Date(founded[1]).toISOString() : nowIso(),
+      publishedAt,
       scrapedAt: nowIso(),
       isActive: !runStatus,
     });
@@ -68,12 +73,13 @@ function parseAirports(md: string): VpnEntry[] {
 function parseRunEvents(md: string): VpnEntry[] {
   const out: VpnEntry[] = [];
   const runKeywords = ['跑路', '停止运营', '停止中国大陆', '已关停', '关停', '不干了'];
-  const re = /(?:#{1,4}\s*)?(?:\d+\.\s*)?\*\*?([^*\n]{2,30}?(?:VPN|机场|加速器|加速|梯子|代理)[^*\n]*)\*\*?[\s\S]{0,200}?(跑路|停止运营|停止中国大陆|已关停|关停|不干了|可能跑路)/g;
+  // 要求名称在行首（可选标题/序号前缀），且不含句中标点，避免误捕获句子片段
+  const re = /(?:^|\n)(?:#{1,4}\s*)?(?:\d+\.\s*)?\*\*?([^*\n，。！？、]{2,20}?(?:VPN|机场|加速器|加速|梯子|代理))\*\*?[\s\S]{0,200}?(跑路|停止运营|停止中国大陆|已关停|关停|不干了|可能跑路)/g;
   let m: RegExpExecArray | null;
   const seen = new Set<string>();
   while ((m = re.exec(md)) !== null) {
     const name = cleanText(m[1]);
-    if (!name || name.length > 30) continue;
+    if (!name || name.length > 20) continue;
     const id = makeId(name, 'panda-vpn-pro#run');
     if (seen.has(id)) continue;
     seen.add(id);

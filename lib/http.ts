@@ -144,10 +144,14 @@ export function loadHtml(html: string) {
 
 export function absoluteUrl(base: string, maybe: string | undefined | null): string | undefined {
   if (!maybe) return undefined;
+  // 拦截伪协议（javascript:/data:/vbscript: 等），防止存储型 XSS
+  if (/^(javascript|data|vbscript|file):/i.test(maybe.trim())) return undefined;
   if (/^https?:\/\//i.test(maybe)) return maybe;
   if (maybe.startsWith('//')) return 'https:' + maybe;
   try {
-    return new URL(maybe, base).toString();
+    const u = new URL(maybe, base);
+    // 仅允许 http/https 协议
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.toString() : undefined;
   } catch {
     return undefined;
   }

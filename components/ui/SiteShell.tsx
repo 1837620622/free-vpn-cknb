@@ -72,12 +72,12 @@ export function SiteShell({ children, stats }: { children: ReactNode; stats: { t
                 <Link
                   key={n.href}
                   href={n.href}
-                  className="relative px-3 py-1.5 text-[13px] font-medium transition-colors"
+                  className="relative px-3 py-1.5 text-[13px] font-medium transition-all duration-200 rounded-md hover:bg-bg-elev/50"
                   style={{ color: active ? 'var(--fg-strong)' : 'var(--fg-soft)' }}
                 >
                   {n.label}
                   {active && (
-                    <span className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full" style={{ background: NV_GREEN }} />
+                    <span className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full transition-all duration-300" style={{ background: NV_GREEN, boxShadow: '0 0 8px rgba(118,185,0,0.5)' }} />
                   )}
                 </Link>
               );
@@ -135,17 +135,17 @@ export function SiteShell({ children, stats }: { children: ReactNode; stats: { t
               </button>
             </div>
             <nav className="flex-1 overflow-y-auto py-4" aria-label="移动导航">
-              {NAV.map((n) => {
+              {NAV.map((n, i) => {
                 const active = n.href === '/' ? pathname === '/' : pathname?.startsWith(n.href);
                 return (
                   <Link
                     key={n.href}
                     href={n.href}
-                    className="flex items-center justify-between px-5 py-3 text-[16px] font-medium border-b transition-colors"
-                    style={{ color: active ? NV_GREEN : 'var(--fg)', borderColor: 'var(--border)' }}
+                    className="flex items-center justify-between px-5 py-3 text-[16px] font-medium border-b transition-all duration-200 card-enter"
+                    style={{ color: active ? NV_GREEN : 'var(--fg)', borderColor: 'var(--border)', animationDelay: `${i * 0.04}s` }}
                   >
                     <span>{n.label}</span>
-                    {active && <span className="h-1.5 w-1.5 rounded-full" style={{ background: NV_GREEN }} />}
+                    {active && <span className="h-1.5 w-1.5 rounded-full pulse-soft" style={{ background: NV_GREEN, boxShadow: '0 0 8px rgba(118,185,0,0.8)' }} />}
                   </Link>
                 );
               })}
@@ -229,7 +229,7 @@ export function SiteShell({ children, stats }: { children: ReactNode; stats: { t
 
 function FooterMetric({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="footer-metric">
+    <div className="footer-metric transition-colors duration-200 hover:bg-bg-elev/30">
       <span>{label}</span>
       <strong>{value}</strong>
     </div>

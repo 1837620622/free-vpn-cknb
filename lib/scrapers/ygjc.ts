@@ -78,7 +78,7 @@ async function scrapePage(url: string): Promise<VpnEntry[]> {
     const realCoupon = coupon && coupon !== '无需优惠券' ? coupon : undefined;
 
     const type = cleanText($card.find('.vpn-type-badge').first().text());
-    const vtype: VpnEntry['type'] = /免费/.test(type) ? 'free' : 'trial';
+    const vtype: VpnEntry['type'] = /免费|free/i.test(type) ? 'free' : /付费|paid/i.test(type) ? 'review' : 'trial';
 
     const traffic = readRow($, $card, '免费流量|流量|赠送流量');
     const period = readRow($, $card, '试用期限|期限|时长');
@@ -105,11 +105,6 @@ async function scrapePage(url: string): Promise<VpnEntry[]> {
       id: makeId(name, signupUrl ?? name),
       name,
       type: vtype as VpnEntry['type'],
-      period: period ?? '未知试用期限',
-      couponCode: realCoupon ?? undefined,
-      isActive: true,
-      traffic: traffic ?? '未知流量',
-      protocols: protocols.length > 0 ? protocols : undefined,
       description: desc,
       signupUrl,
       websiteUrl: signupUrl,

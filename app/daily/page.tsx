@@ -10,10 +10,10 @@ import { getWindowText } from '@/lib/site-text';
 export const dynamic = 'force-dynamic';
 
 const BUCKETS = [
-  { key: 'day', label: '今日 24h', ms: 24 * 3600 * 1000 },
-  { key: '3d', label: '近 3 日', ms: 3 * 24 * 3600 * 1000 },
-  { key: '7d', label: '近 7 日', ms: 7 * 24 * 3600 * 1000 },
-  { key: '15d', label: getWindowText() + '内', ms: 15 * 24 * 3600 * 1000 },
+  { key: 'day', label: '今日 24h', min: 0, max: 24 * 3600 * 1000 },
+  { key: '3d', label: '近 3 日', min: 24 * 3600 * 1000, max: 3 * 24 * 3600 * 1000 },
+  { key: '7d', label: '近 7 日', min: 3 * 24 * 3600 * 1000, max: 7 * 24 * 3600 * 1000 },
+  { key: '15d', label: getWindowText() + '内', min: 7 * 24 * 3600 * 1000, max: 15 * 24 * 3600 * 1000 },
 ] as const;
 
 export default async function DailyPage() {
@@ -22,13 +22,14 @@ export default async function DailyPage() {
   const sorted = [...all].sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
   const now = Date.now();
 
+  // 互斥区间：每条只归入一个桶，避免同一卡片重复出现
   const groups = BUCKETS.map((b) => ({
     label: b.label,
     key: b.key,
     items: sorted.filter((e) => {
       if (!e.publishedAt) return false;
       const d = now - new Date(e.publishedAt).getTime();
-      return d < b.ms;
+      return d >= b.min && d < b.max;
     }),
   }));
 

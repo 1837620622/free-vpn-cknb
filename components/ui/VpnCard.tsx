@@ -46,7 +46,7 @@ export function VpnCard({ entry }: { entry: VpnEntry }) {
 
   return (
     <article
-      className="vpn-card group relative flex flex-col rounded-lg overflow-hidden border transition-all duration-200 hover:-translate-y-0.5"
+      className="vpn-card group relative flex flex-col rounded-lg overflow-hidden border transition-all duration-300 card-enter hover-lift"
       style={{
         background: 'var(--bg-card)',
         borderColor: 'var(--border-card)',
@@ -59,10 +59,11 @@ export function VpnCard({ entry }: { entry: VpnEntry }) {
           border-color: color-mix(in srgb, var(--c) 50%, transparent);
           box-shadow: var(--shadow-card-hover), 0 0 0 1px color-mix(in srgb, var(--c) 18%, transparent);
         }
-        .vpn-card:hover .vpn-accent-strip { filter: brightness(1.15); }
+        .vpn-card:hover .vpn-accent-strip { filter: brightness(1.25); transform: scaleX(1.02); }
+        .vpn-card:hover .vpn-card-title { color: color-mix(in srgb, var(--c) 85%, var(--fg-strong)); }
       `}</style>
       <div
-        className="vpn-accent-strip h-[3px] w-full"
+        className="vpn-accent-strip h-[3px] w-full transition-all duration-300 origin-left"
         style={{ background: `linear-gradient(90deg, ${theme.color} 0%, ${theme.color}80 100%)` }}
       />
 
@@ -79,7 +80,7 @@ export function VpnCard({ entry }: { entry: VpnEntry }) {
       </div>
 
       <div className="px-4 sm:px-5 pb-3 flex-1 flex flex-col">
-        <h3 className="text-[16px] sm:text-[17px] font-semibold tracking-tight leading-snug" style={{ color: 'var(--fg-strong)' }} title={entry.name}>
+        <h3 className="vpn-card-title text-[16px] sm:text-[17px] font-semibold tracking-tight leading-snug transition-colors duration-200" style={{ color: 'var(--fg-strong)' }} title={entry.name}>
           {short}
         </h3>
         {entry.description && (
@@ -88,7 +89,7 @@ export function VpnCard({ entry }: { entry: VpnEntry }) {
           </p>
         )}
 
-        {(entry.traffic || entry.period || entry.speed || entry.nodeCount != null || entry.latencyMs != null || entry.regions?.length) && (
+        {(entry.traffic || entry.period || entry.speed || entry.nodeCount != null || entry.latencyMs != null || (entry.regions?.length ?? 0) > 0) && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {entry.traffic && <Spec Icon={IconData} label="流量" value={entry.traffic} />}
             {entry.period && <Spec Icon={IconClock} label="周期" value={entry.period} />}

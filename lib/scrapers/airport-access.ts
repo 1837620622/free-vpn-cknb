@@ -85,8 +85,12 @@ export const airportAccessScraper: Scraper = {
           if (row.length < 2) continue;
           const name = cleanText(row[0]);
           if (!name || name.length < 2 || name.length > 30) continue;
-          if (/机场|线路|协议|工具|流媒体|设备|使用|注意|你是|建议|为什么|优惠|入口|快速|内容|场景/i.test(name) && row.length < 3) continue;
+          // 过滤 Markdown 粗体残留、表头词、纯中文短句（场景文案）
+          if (name.includes('**')) continue;
           if (/^[-:.\s]+$/.test(name)) continue;
+          if (/机场|线路|协议|工具|流媒体|设备|使用|注意|你是|建议|为什么|优惠|入口|快速|内容|场景|套餐|类型|价格|流量|用户|折腾|主力|发掘|推荐列表/i.test(name)) continue;
+          // 纯中文且无数字/英文的短句大概率是文案而非机场名
+          if (/^[一-龥，。！？、]+$/.test(name) && name.length > 6) continue;
           const id = makeId(name, README_URL + '#' + name);
           if (seen.has(id)) continue;
           seen.add(id);

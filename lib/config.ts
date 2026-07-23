@@ -115,6 +115,33 @@ export const CONFIG = {
       cutoffDays: 365,
       description: '机场跑路/预警名单',
     },
+    automerge: {
+      id: 'automerge',
+      displayName: 'AutoMerge 公开节点池',
+      url: 'https://github.com/chengaopan/AutoMergePublicNodes',
+      enabled: true,
+      type: 'node',
+      cutoffDays: 0,
+      description: '每日自动聚合互联网公开节点，标准 Clash YAML',
+    },
+    clashfree: {
+      id: 'clashfree',
+      displayName: 'clashfree 每日订阅',
+      url: 'https://github.com/free-nodes/clashfree',
+      enabled: true,
+      type: 'node',
+      cutoffDays: 0,
+      description: '每日生成独立 Clash 订阅文件，含国家/协议标识',
+    },
+    freesub: {
+      id: 'freesub',
+      displayName: 'FreeSub 公益订阅池',
+      url: 'https://github.com/ovmvo/FreeSub',
+      enabled: true,
+      type: 'node',
+      cutoffDays: 0,
+      description: '公益订阅池，含最新与长期有效节点',
+    },
   } satisfies Record<string, SourceConfig>,
 } as const;
 

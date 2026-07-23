@@ -29,7 +29,7 @@ export default async function HomePage() {
   return (
     <SiteShell stats={stats}>
       <section className="hero-stage pt-7 sm:pt-10 pb-8 sm:pb-10 grid lg:grid-cols-[minmax(0,1.02fr)_minmax(340px,0.82fr)] gap-7 lg:gap-10 items-center">
-        <div className="relative z-10">
+        <div className="relative z-10 fade-in-up">
           <div className="eyebrow mb-4 sm:mb-5 flex items-center gap-2 flex-wrap" style={{ color: 'var(--fg-mute)' }}>
             <span className="h-1.5 w-1.5 rounded-full pulse-soft" style={{ background: 'var(--accent-green)', boxShadow: '0 0 8px var(--accent-green)' }} />
             <span>LIVE EDGE DATA</span>
@@ -51,21 +51,21 @@ export default async function HomePage() {
           <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3">
             <a
               href="#realtime"
-              className="btn-nv inline-flex items-center gap-2 px-5 py-3 text-[14px] font-bold rounded-md text-black active:scale-[0.97] transition-transform"
+              className="btn-nv inline-flex items-center gap-2 px-5 py-3 text-[14px] font-bold rounded-md text-black active:scale-[0.97] transition-all duration-200 hover:shadow-[0_12px_32px_rgba(118,185,0,0.35)]"
               style={{ background: 'var(--accent-green)', boxShadow: '0 8px 24px rgba(118, 185, 0, 0.25)' }}
             >
               浏览实时情报 <IconArrowRight width={14} height={14} />
             </a>
             <a
               href="/sources"
-              className="inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold rounded-md transition-colors surface-button"
+              className="inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold rounded-md transition-all duration-200 surface-button hover:border-strong"
             >
               查看数据源 <IconChevronRight width={13} height={13} />
             </a>
           </div>
         </div>
 
-        <aside className="hero-dashboard">
+        <aside className="hero-dashboard fade-in-up delay-200">
           <div className="hero-dashboard__head">
             <span className="eyebrow" style={{ color: 'var(--accent-text)' }}>LIVE SNAPSHOT</span>
             <span>{stats.updatedAt}</span>
@@ -164,11 +164,11 @@ function Stat({ label, value, sub, Icon, theme }: { label: string; value: number
 
 function Section({ id, num, title, subtitle, link, theme, children }: { id?: string; num: string; title: string; subtitle: string; link?: string; theme: TypeTheme; children: ReactNode }) {
   return (
-    <section id={id} className="py-9 sm:py-12" style={{ borderTop: '1px solid var(--border)' }}>
+    <section id={id} className="py-9 sm:py-12 fade-in-up" style={{ borderTop: '1px solid var(--border)' }}>
       <header className="flex items-end justify-between gap-4 mb-6 sm:mb-7">
         <div className="flex items-start gap-4 sm:gap-5">
           <div
-            className="hidden sm:flex h-11 w-11 rounded-lg items-center justify-center shrink-0"
+            className="hidden sm:flex h-11 w-11 rounded-lg items-center justify-center shrink-0 transition-transform duration-300 hover:scale-110"
             style={{
               background: `color-mix(in srgb, ${theme.color} 12%, transparent)`,
               border: `1px solid color-mix(in srgb, ${theme.color} 28%, transparent)`,
@@ -188,7 +188,7 @@ function Section({ id, num, title, subtitle, link, theme, children }: { id?: str
         {link && (
           <Link
             href={link}
-            className="hidden sm:inline-flex items-center gap-1.5 text-[12.5px] font-semibold shrink-0 hover:opacity-80"
+            className="hidden sm:inline-flex items-center gap-1.5 text-[12.5px] font-semibold shrink-0 transition-all duration-200 hover:gap-2.5"
             style={{ color: theme.id === 'trial' ? 'var(--accent-text)' : theme.color }}
           >
             查看全部 <IconChevronRight width={13} height={13} />

@@ -13,7 +13,12 @@ const STORAGE_KEY = 'theme-mode';
 
 export function getStoredTheme(): ThemeMode {
   if (typeof window === 'undefined') return 'system';
-  return (localStorage.getItem(STORAGE_KEY) as ThemeMode) || 'system';
+  try {
+    return (localStorage.getItem(STORAGE_KEY) as ThemeMode) || 'system';
+  } catch {
+    // Safari 隐私模式下 localStorage 可能抛异常
+    return 'system';
+  }
 }
 
 export function applyTheme(mode: ThemeMode) {
@@ -50,7 +55,11 @@ export function ThemeToggle() {
     const order: ThemeMode[] = ['system', 'light', 'dark'];
     const next = order[(order.indexOf(mode) + 1) % order.length];
     setMode(next);
-    localStorage.setItem(STORAGE_KEY, next);
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // Safari 隐私模式下 localStorage 可能抛异常
+    }
     applyTheme(next);
   };
 

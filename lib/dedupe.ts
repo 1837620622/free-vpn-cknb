@@ -74,6 +74,8 @@ function latestIso(a: string, b: string): string {
 
 /**
  * 标记 isActive：与跑路名单交叉
+ * - dead 条目本身是展示内容（跑路名单页），保持 isActive=true
+ * - 与跑路名单匹配的正常条目标记为 isActive=false，不在正常列表展示
  */
 export function applyDeadList(entries: VpnEntry[]): VpnEntry[] {
   const deadNames = new Set<string>();
@@ -81,7 +83,7 @@ export function applyDeadList(entries: VpnEntry[]): VpnEntry[] {
     if (e.type === 'dead') deadNames.add(normalizeForMatch(e.name));
   }
   return entries.map((e) => {
-    if (e.type === 'dead') return { ...e, isActive: false };
+    if (e.type === 'dead') return { ...e, isActive: true };
     const key = normalizeForMatch(e.name);
     return { ...e, isActive: !deadNames.has(key) };
   });

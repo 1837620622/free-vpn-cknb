@@ -23,7 +23,7 @@ export async function ListPage({ eyebrow, title, subtitle, filter, badge }: { ey
 
   return (
     <SiteShell stats={stats}>
-      <section className="pt-8 sm:pt-12 pb-6 sm:pb-8">
+      <section className="pt-8 sm:pt-12 pb-6 sm:pb-8 fade-in-up">
         <div className="eyebrow mb-3" style={{ color: 'var(--accent-text)' }}>{eyebrow}</div>
         <h1 className="display text-[36px] sm:text-[56px] lg:text-[72px] text-fg-strong leading-[1.0] flex flex-wrap items-baseline gap-3">
           {title}
@@ -35,12 +35,16 @@ export async function ListPage({ eyebrow, title, subtitle, filter, badge }: { ey
       <section className="pb-14 sm:pb-18">
         {list.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {list.map((e) => <VpnCard key={e.id} entry={e} />)}
+            {list.map((e, i) => (
+              <div key={e.id} className="card-enter" style={{ animationDelay: `${Math.min(i * 0.05, 0.5)}s` }}>
+                <VpnCard entry={e} />
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="py-12 text-center text-fg-mute">
+          <div className="py-12 text-center text-fg-mute fade-in-up">
             <p className="text-[14px]">暂无数据</p>
-            <a href="/" className="inline-flex items-center gap-1.5 mt-3 text-[13px] font-semibold hover:text-fg-strong">
+            <a href="/" className="inline-flex items-center gap-1.5 mt-3 text-[13px] font-semibold hover:text-fg-strong transition-colors">
               返回首页 <IconChevronRight width={12} height={12} />
             </a>
           </div>

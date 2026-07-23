@@ -16,6 +16,9 @@ import { pandaScraper } from './panda';
 import { airportAccessScraper } from './airport-access';
 import { tgEnricherScraper } from './tg-enricher';
 import { freenodeScraper } from './freenode';
+import { automergeScraper } from './automerge';
+import { clashfreeScraper } from './clashfree';
+import { freesubScraper } from './freesub';
 
 export const allScrapers: Scraper[] = [
   ygjcScraper,
@@ -32,6 +35,9 @@ export const allScrapers: Scraper[] = [
   airportAccessScraper,
   tgEnricherScraper,
   freenodeScraper,
+  automergeScraper,
+  clashfreeScraper,
+  freesubScraper,
 ];
 
 export const scraperById = (id: string): Scraper | undefined =>

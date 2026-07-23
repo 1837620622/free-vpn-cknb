@@ -87,6 +87,21 @@ async function scrapeReview(url: string): Promise<Partial<VpnEntry> | null> {
   };
 }
 
+/**
+ * 稳健匹配评测 URL：仅用名称中的拉丁字符片段匹配，
+ * 避免中文名前 4 字符匹配英文 URL 导致的误配
+ */
+function matchReviewUrl(name: string, reviewUrls: string[]): string | undefined {
+  // 提取名称中的拉丁字符片段（至少 3 个字符）
+  const latinParts = name.match(/[a-zA-Z0-9]{3,}/g);
+  if (!latinParts || latinParts.length === 0) return undefined;
+
+  return reviewUrls.find((u) => {
+    const urlLower = u.toLowerCase();
+    return latinParts.some((part) => urlLower.includes(part.toLowerCase()));
+  });
+}
+
 export const kerrynotesScraper: Scraper = {
   id: 'kerrynotes',
   displayName: 'Kerry 的学习笔记',
@@ -100,10 +115,7 @@ export const kerrynotesScraper: Scraper = {
 
       const enriched: VpnEntry[] = [];
       for (const e of entries) {
-        const matchedReview = reviewUrls.find((u) => {
-          const slug = e.name.toLowerCase().replace(/\s+/g, '');
-          return u.toLowerCase().includes(slug.slice(0, 4)) || u.toLowerCase().includes(e.name.toLowerCase().replace(/\s+/g, '-'));
-        });
+        const matchedReview = matchReviewUrl(e.name, reviewUrls);
         if (matchedReview) {
           const ext = await scrapeReview(matchedReview);
           if (ext) {

@@ -28,7 +28,8 @@ async function scrapeHome(): Promise<{ entries: VpnEntry[]; detailUrls: string[]
     if (!title || !href) return;
     if (!/vpn|机场|节点|翻墙|科学|proxy|clash|v2|ss|ssr|trojan/i.test(title + href)) return;
 
-    const url = absoluteUrl(BASE + '/', href)!;
+    const url = absoluteUrl(BASE + '/', href);
+    if (!url) return;
     const isDetail = url.includes(BASE) && url !== BASE + '/';
 
     const dateText = cleanText($art.find('time, .date, .post-date').first().attr('datetime') ?? $art.find('time, .date, .post-date').first().text());

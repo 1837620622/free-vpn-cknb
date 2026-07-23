@@ -6,7 +6,8 @@ import { notFound } from 'next/navigation';
 import { SiteShell } from '@/components/ui/SiteShell';
 import { FreshnessBadge } from '@/components/ui/FreshnessBadge';
 import { TypeChip } from '@/components/ui/TypeChip';
-import { IconArrowUpRight, IconClock, IconGlobe, IconTelegram, IconCalendar, IconCopy, IconBolt, IconSpeed, IconData, IconChevronRight, IconArrowRight } from '@/components/ui/Icon';
+import { IconArrowUpRight, IconClock, IconGlobe, IconTelegram, IconCalendar, IconBolt, IconSpeed, IconData, IconChevronRight } from '@/components/ui/Icon';
+import { CopyButton } from '@/components/ui/CopyButton';
 import { getEntryByIdRuntime } from '@/lib/read-data';
 import { getShellStatsRuntime } from '@/lib/shell-stats';
 import { formatUpdatedAt } from '@/lib/site-text';
@@ -112,7 +113,7 @@ export default async function VpnDetailPage({ params }: { params: Promise<{ id: 
         entry.rating != null && { label: '评分', value: '★ ' + entry.rating.toFixed(1) },
       ].filter(Boolean) as { label: string; value: string }[]} />
 
-      {(entry.protocols?.length || entry.regions?.length) && (
+      {((entry.protocols?.length ?? 0) > 0 || (entry.regions?.length ?? 0) > 0) && (
         <Section title="协议与地区" items={undefined}>
           {entry.protocols?.length ? (
             <div>
@@ -200,25 +201,5 @@ function MetaRow({ Icon, label, children }: { Icon: React.ComponentType<{ width?
       <span className="text-fg-mute">{label}</span>
       <span className="text-fg font-mono-num">{children}</span>
     </div>
-  );
-}
-
-function CopyButton({ text }: { text: string }) {
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          if (typeof navigator !== 'undefined' && navigator.clipboard) {
-            await navigator.clipboard.writeText(text);
-            const el = document.getElementById('copy-msg');
-            if (el) el.textContent = '已复制';
-          }
-        } catch {}
-      }}
-      className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[14px] font-semibold rounded-md border border-border-strong text-fg-strong hover:bg-bg-elev"
-    >
-      <IconCopy width={13} height={13} /> <span id="copy-msg">复制订阅</span>
-    </button>
   );
 }

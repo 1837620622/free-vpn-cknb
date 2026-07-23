@@ -112,7 +112,14 @@ export function GlobalScene() {
       mount.removeChild(renderer.domElement);
       core.geometry.dispose();
       (core.material as THREE.Material).dispose();
+      // 释放 4 个轨道环的几何体与材质，避免 Strict Mode 下 GPU 资源泄漏
+      for (const child of ringGroup.children) {
+        const line = child as THREE.Line;
+        line.geometry.dispose();
+        (line.material as THREE.Material).dispose();
+      }
       particlesGeometry.dispose();
+      (particles.material as THREE.Material).dispose();
       renderer.dispose();
     };
   }, []);
